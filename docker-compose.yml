@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Nuxt.js App Service
   nuxt-app:
@@ -10,12 +8,6 @@ services:
     ports:
       # Expose port 3000 for the Nuxt app
       - "3000:3000"
-    volumes:
-      # Mount the entire project directory for hot-reloading in development
-      # In production, you might only mount specific directories like '.output'
-      - .:/app
-      # Exclude node_modules from being overwritten by the host
-      - /app/node_modules
     environment:
       # The host for the Nuxt app
       - NUXT_HOST=0.0.0.0

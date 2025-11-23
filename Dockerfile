@@ -12,6 +12,7 @@ COPY . .
 
 # Build the application
 RUN npm run build
+RUN ls -la .output/server
 
 # Stage 2: Runner
 # This stage creates the final, lean image for production.

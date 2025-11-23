@@ -1,23 +1,43 @@
-# Environment variables
+# Environments
 .env
+.env.*
+.temp
 
-# Dependencies
-node_modules
+# Git
+.gitattributes
+.DS_Store
 
-# Nuxt build directory
-.nuxt
-
-# IDE / Editor directories
-.idea
-.vscode
-
-# Log files
+# Logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Lockfiles
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
+# IDEs and Editors
+.idea
+.vscode
+*.sublime-project
+*.sublime-workspace
+*.md
+
+# Builds
+.nuxt
+.output
+dist
+build
+*.local
+
+# Dependencies
+node_modules/
+
+# misc
+.svg
+.public
+.history
+.npm
+.npmrc
+.npmignore
+.cache
+.package-lock.json

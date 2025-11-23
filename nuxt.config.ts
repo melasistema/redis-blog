@@ -11,5 +11,13 @@ export default defineNuxtConfig({
     compatibilityDate: '2025-11-23'
   },
   // Optional: Add any other Nuxt configuration here
-  devtools: { enabled: true }
+  devtools: { enabled: true },
+  vite: {
+    server: {
+      hmr: {
+        clientPort: 3000,
+        protocol: 'ws',
+      },
+    },
+  },
 })

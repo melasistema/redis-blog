@@ -95,8 +95,9 @@ async function seedRedis() {
       console.log(`Seeded post: "${post.title}" with key "${postKey}"`);
     }
 
-    console.log('Redis seeding complete!');
-  } catch (error) {
+          console.log('Redis seeding complete!');
+        await redis.save(); // Explicitly save data to disk
+        console.log('Redis data saved to disk.');  } catch (error) {
     console.error('Failed to seed Redis:', error);
   } finally {
     await redis.disconnect();
