@@ -7,6 +7,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "seed": "tsx seed-redis.ts",
+    "new-post": "tsx scripts/new-post.ts",
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {

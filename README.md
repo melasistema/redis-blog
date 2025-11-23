@@ -65,7 +65,15 @@ npm install
 
 ### 3. Configuration
 
-The application uses environment variables for configuration. These can be set via `docker-compose.yml` for containerized environments or in a `.env` file for local development.
+The application uses environment variables for configuration. You can use the provided `.env.example` and `.env.secret.example` files as templates.
+
+*   **For Development:** Copy `.env.example` to a new file named `.env` for local development.
+    ```bash
+    cp .env.example .env
+    ```
+    The default values in this file are configured to work with the Dockerized Redis instance.
+
+*   **For Production:** The `.env.secret.example` file outlines sensitive variables. Create a `.env.secret` file for your production environment and ensure it is handled securely and not committed to version control.
 
 #### Environment Variables
 
@@ -75,20 +83,7 @@ The application uses environment variables for configuration. These can be set v
 | `NUXT_REDIS_URL`          | Direct Redis connection URL. Used by `npm run seed` and for some Redis commands. | `redis://redis:6379`               | `redis://localhost:6380`          |
 | `NUXT_PUBLIC_REDIS_HOST`  | Redis hostname for connections, exposed via public runtime config.           | `redis`                            | `localhost`                       |
 | `NUXT_PUBLIC_REDIS_PORT`  | Redis port for connections, exposed via public runtime config.               | `6379`                             | `6380`                            |
-
-#### For Local Development (`.env` file)
-Create a `.env` file in the project root with the following content:
-
-```dotenv
-# .env file for local development
-# Connects to the Redis container on the host-mapped port
-NUXT_REDIS_URL=redis://localhost:6380
-NUXT_PUBLIC_REDIS_HOST=localhost
-NUXT_PUBLIC_REDIS_PORT=6380
-
-# The public URL for the Nuxt application when running locally
-NUXT_URL=http://localhost:3000
-```
+| `REDIS_PASSWORD`          | The password for your Redis instance. (Handled in `.env.secret`)            | `your-secure-password`             | `your-secure-password`            |
 
 ### 4. Running with Docker Compose (Recommended)
 
@@ -121,6 +116,20 @@ After starting either with Docker Compose or locally (and Redis is running), pop
 ```bash
 npm run seed
 ```
+
+## How To
+
+### Create a New Post
+
+You can create a new blog post using the command-line interface.
+
+```bash
+npm run new-post "{title}" "{content}" "{tags}"
+```
+
+-   `{title}`: The title of your blog post.
+-   `{content}`: The full HTML content of your post.
+-   `{tags}`: A comma-separated list of tags (e.g., "nuxt,redis,tutorial").
 
 ### API Endpoints
 The application exposes the following API endpoints:
