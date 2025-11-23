@@ -32,25 +32,25 @@ async function seedRedis() {
       {
         title: 'Getting Started with Nuxt 3 and Redis',
         content: '<h2>A Modern Stack for Web Development</h2><p>This post covers the basics of setting up a Nuxt 3 project with Redis as a database, all orchestrated with Docker Compose.</p><p>We use RedisJSON for flexible data storage and Redis Stack for additional modules like RediSearch.</p>',
-        author: 'Gemini Agent',
+        author: 'Melasistema',
         tags: ['nuxt', 'redis', 'docker', 'tutorial'],
       },
       {
         title: 'Understanding RedisJSON for Document Storage',
         content: '<h3>Beyond Key-Value Pairs</h3><p>RedisJSON transforms Redis into a powerful document database. Learn how to store, retrieve, and update complex JSON objects efficiently.</p>',
-        author: 'Gemini Agent',
+        author: 'Melasistema',
         tags: ['redis', 'json', 'database', 'module'],
       },
       {
         title: 'Building Scalable APIs with Nuxt 3 Server Routes',
         content: '<h4>The Power of Hybrid Rendering</h4><p>Nuxt 3\'s server routes provide a flexible way to build robust APIs directly within your frontend project. Discover how to connect them to your backend services like Redis.</p>',
-        author: 'Gemini Agent',
+        author: 'Melasistema',
         tags: ['nuxt', 'api', 'server', 'performance'],
       },
       {
         title: 'Dockerizing Your Nuxt.js Application',
         content: '<h5>Containerization Best Practices</h5><p>Learn how to create a multi-stage Dockerfile for your Nuxt.js app to ensure a lean, production-ready image. Integrate it seamlessly with Redis using Docker Compose.</p>',
-        author: 'Gemini Agent',
+        author: 'Melasistema',
         tags: ['docker', 'deployment', 'nuxt', 'container'],
       },
     ];

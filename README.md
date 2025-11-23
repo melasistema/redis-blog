@@ -14,7 +14,7 @@ A modern, high-performance blog boilerplate built with Nuxt.js, Redis, and Docke
 ## 🛠️ Tech Stack
 
 - **Frontend:** [Nuxt.js 3](https://nuxt.com/)
-- **Database:** [Redis Stack](https://redis.io/docs/latest/operate/oss_and_stack/stack/) (includes RedisJSON)
+- **Database:** [Redis](https://github.com/redis/redis)
 - **Containerization:** [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
 - **TypeScript Runtime:** [tsx](https://github.com/esbuild-kit/tsx)
 
@@ -63,7 +63,6 @@ npm run seed
 
 The application should now be running.
 - **Blog Frontend:** [http://localhost:3000](http://localhost:3000)
-- **RedisInsight GUI:** [http://localhost:8001](http://localhost:8001) (to visually inspect your Redis data)
 
 ## 🌟 Credits
 
@@ -71,7 +70,7 @@ This project is made possible by the inspiration, contributions, and tools of an
 
 -   **👨‍💻 Author**: [Luca Visciola](https://github.com/melasistema) – Passionate drummer and developer. Reach out at [info@melasistema.com](mailto:info@melasistema.com) for inquiries or feedback.
 
--   **🚀 Inspired by Salvatore Sanfilippo**: The foundation of this project stems from the unreachable talent of [Salvatore Sanfilippo](https://antirez.com/latest/0). Discover the magic and speed of  [Redis](https://github.com/redis/redis).
+-   **🚀 Inspired by Salvatore Sanfilippo**: The foundation of this project stems from the unreachable talent of [Salvatore Sanfilippo](https://antirez.com). Discover the magic and speed of  [Redis](https://github.com/redis/redis).
 
 
 ### 🙌 Special Thanks

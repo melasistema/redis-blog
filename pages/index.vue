@@ -2,7 +2,7 @@
   <div class="container">
     <header>
       <h1>Redis & Nuxt Blog</h1>
-      <p>A demonstration of a powerful and elegant blog architecture.</p>
+      <p>A powerful and elegant blog architecture inspired by <a href="https://antirez.com/">Salvatore Sanfilippo.</a></p>
     </header>
 
     <div class="controls">
