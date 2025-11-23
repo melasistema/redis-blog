@@ -1,0 +1,57 @@
+services:
+  # Nuxt.js App Service
+  nuxt-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nuxt_blog_app
+    ports:
+      # Expose port 3000 for the Nuxt app (necessary for web traffic)
+      - "3000:3000"
+    environment:
+      # CRITICAL: This URL structure ensures the connection uses the internal 'redis' host
+      # and includes the password provided by the securely managed REDIS_PASSWORD variable.
+      # This explicitly set variable will override any NUXT_REDIS_URL in the .env files.
+      - NUXT_REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+
+      # NOTE: Other environment variables (NUXT_HOST, NUXT_PORT, NUXT_URL, etc.)
+      # are loaded below via the env_file directive.
+
+    # Ensure Redis is started before the Nuxt app
+    depends_on:
+      - redis
+    # CRITICAL FIX: Load BOTH the public configuration (.env) and the secret password (.env.secret).
+    env_file:
+      - .env          # For non-secret variables (HOST, PORT, etc.)
+      - .env.secret   # For the REDIS_PASSWORD secret
+
+  # Redis Stack Service (SECURE AND ISOLATED)
+  redis:
+    # We use redis-stack-server to get RedisJSON, RediSearch, and RedisInsight
+    image: redis/redis-stack-server:latest
+    container_name: nuxt_blog_redis
+
+    # SECURITY FIX 1: REMOVED PORTS MAPPING
+    # Redis is now only accessible internally by containers on the Docker network.
+
+    # SECURITY FIX 2: ADDED PASSWORD AUTHENTICATION
+    # This command instructs Redis to require a password, which is loaded from the
+    # securely managed .env.secret file (REDIS_PASSWORD).
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
+
+    # Load the secret password for the command above
+    env_file:
+      - .env.secret
+
+    volumes:
+      # Persist Redis data across container restarts
+      - redis-data:/data
+    networks:
+      - default
+
+volumes:
+  redis-data:
+
+networks:
+  default:
+    driver: bridge
