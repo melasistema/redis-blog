@@ -2,7 +2,7 @@
   <div class="container">
     <header>
       <h1>Redis & Nuxt Blog</h1>
-      <p>A powerful and elegant blog architecture inspired by <a href="https://antirez.com/">Salvatore Sanfilippo.</a></p>
+      <p>A powerful and elegant blog architecture inspired by <a href="https://antirez.com/" target="_blank">Salvatore Sanfilippo.</a></p>
     </header>
 
     <div class="controls">
@@ -16,20 +16,22 @@
       <h2>Recent Posts</h2>
       <div v-if="pending" class="loading">Loading posts...</div>
       <div v-else-if="posts && posts.length > 0" class="posts-grid">
-        <div v-for="post in posts" :key="post.id" class="post-card">
-          <h3>{{ post.title }}</h3>
-          <div class="post-meta">
-            <span>By {{ post.author }}</span>
-            <span>{{ new Date(post.createdAt).toLocaleDateString() }}</span>
+        <NuxtLink v-for="post in posts" :key="post.id" :to="`/posts/${post.slug}`" class="post-link">
+          <div class="post-card">
+            <h3>{{ post.title }}</h3>
+            <div class="post-meta">
+              <span>By {{ post.author }}</span>
+              <span>{{ new Date(post.createdAt).toLocaleDateString() }}</span>
+            </div>
+            <div class="post-content" v-html="post.content"></div>
+            <div class="tags">
+              <span v-for="tag in post.tags" :key="tag" class="tag">{{ tag }}</span>
+            </div>
           </div>
-          <div class="post-content" v-html="post.content"></div>
-          <div class="tags">
-            <span v-for="tag in post.tags" :key="tag" class="tag">{{ tag }}</span>
-          </div>
-        </div>
+        </NuxtLink>
       </div>
       <div v-else class="no-posts">
-        <p>No posts yet. Click the button above to create one!</p>
+        <p>No posts yet.</p>
       </div>
     </main>
   </div>
