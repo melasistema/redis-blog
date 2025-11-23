@@ -31,10 +31,6 @@ services:
     image: redis/redis-stack-server:latest
     container_name: nuxt_blog_redis
 
-    # SECURITY: REMOVED PORTS MAPPING
-    # Redis is now only accessible internally by containers on the Docker network.
-
-    # SECURITY: ADDED PASSWORD AUTHENTICATION
     # This command instructs Redis to require a password, which is loaded from the
     # securely managed .env.secret file (REDIS_PASSWORD).
     command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
