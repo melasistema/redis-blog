@@ -67,24 +67,41 @@ npm install
 
 The application uses environment variables for configuration. You can use the provided `.env.example` and `.env.secret.example` files as templates.
 
-*   **For Development:** Copy `.env.example` to a new file named `.env` for local development.
+*   **For Development:** Copy `.env.example` to a new file named `.env` for local development. This file contains the necessary variables for running the application locally.
     ```bash
     cp .env.example .env
     ```
-    The default values in this file are configured to work with the Dockerized Redis instance.
+    The default values in this file are configured to work with the Dockerized Redis instance, mapping the Redis port to `6380` on your `localhost`.
 
 *   **For Production:** The `.env.secret.example` file outlines sensitive variables. Create a `.env.secret` file for your production environment and ensure it is handled securely and not committed to version control.
 
 #### Environment Variables
 
+The project uses two types of environment variables:
+
+*   **Runtime Configuration:** These are exposed to the Nuxt application via the `runtimeConfig` and should be prefixed with `NUXT_PUBLIC_`.
+*   **Script Variables:** These are used by external scripts like `seed-redis.ts`.
+
+**Runtime Configuration (`.env` file)**
+
 | Variable Name             | Description                                                                  | Docker Compose Value (Example)     | Local `.env` Value (Example)      |
 |---------------------------|------------------------------------------------------------------------------|------------------------------------|-----------------------------------|
 | `NUXT_URL`                | Base URL for the Nuxt application. Essential for internal requests and link generation. | `http://0.0.0.0:3000`            | `http://localhost:3000`         |
-| `NUXT_REDIS_URL`          | Direct Redis connection URL. Used by `npm run seed` and for some Redis commands. | `redis://redis:6379`               | `redis://localhost:6380`          |
 | `NUXT_PUBLIC_REDIS_HOST`  | Redis hostname for connections, exposed via public runtime config.           | `redis`                            | `localhost`                       |
 | `NUXT_PUBLIC_REDIS_PORT`  | Redis port for connections, exposed via public runtime config.               | `6379`                             | `6380`                            |
-| `REDIS_PASSWORD`          | The password for your Redis instance. (Handled in `.env.secret`)            | `your-secure-password`             | `your-secure-password`            |
-| `DEFAULT_AUTHOR`          | The default author name to use when creating new posts via the CLI.         | `Admin`                            | `CLI User`                        |
+
+**Script & Other Variables (`.env` file)**
+
+| Variable Name             | Description                                                                  | Default Value      |
+|---------------------------|------------------------------------------------------------------------------|--------------------|
+| `NUXT_REDIS_URL`          | Direct Redis connection URL. Used by `seed-redis.ts` and `new-post.ts`.      | `redis://localhost:6380` |
+| `DEFAULT_AUTHOR`          | The default author name to use when creating new posts via the CLI.         | `CLI User`         |
+
+**Secret Variables (`.env.secret` file)**
+
+| Variable Name             | Description                                                                  |
+|---------------------------|------------------------------------------------------------------------------|
+| `REDIS_PASSWORD`          | The password for your Redis instance.                                        |
 
 ### 4. Running with Docker Compose (Recommended)
 
