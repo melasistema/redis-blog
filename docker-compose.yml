@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # Nuxt.js App Service
+  nuxt-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nuxt_blog_app
+    ports:
+      # Expose port 3000 for the Nuxt app
+      - "3000:3000"
+    volumes:
+      # Mount the entire project directory for hot-reloading in development
+      # In production, you might only mount specific directories like '.output'
+      - .:/app
+      # Exclude node_modules from being overwritten by the host
+      - /app/node_modules
+    environment:
+      # The host for the Nuxt app
+      - NUXT_HOST=0.0.0.0
+      # The port for the Nuxt app
+      - NUXT_PORT=3000
+      # The URL for connecting to our Redis instance.
+      # 'redis' is the service name defined below. Docker's internal DNS resolves it.
+      - NUXT_REDIS_URL=redis://redis:6379
+    # Ensure Redis is started before the Nuxt app
+    depends_on:
+      - redis
+
+  # Redis Stack Service
+  redis:
+    # We use redis-stack-server to get RedisJSON, RediSearch, and RedisInsight
+    image: redis/redis-stack-server:latest
+    container_name: nuxt_blog_redis
+    ports:
+      # Standard Redis port
+      - "6380:6379"
+      # Port for RedisInsight GUI
+      - "8001:8001"
+    volumes:
+      # Persist Redis data across container restarts
+      - redis-data:/data
+    networks:
+      - default
+
+volumes:
+  redis-data:
+
+networks:
+  default:
+    driver: bridge

@@ -1,0 +1,23 @@
+# Environment variables
+.env
+
+# Dependencies
+node_modules
+
+# Nuxt build directory
+.nuxt
+
+# IDE / Editor directories
+.idea
+.vscode
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Lockfiles
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
