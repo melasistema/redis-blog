@@ -7,7 +7,6 @@ A modern, high-performance blog boilerplate built with Nuxt.js, Redis, and Docke
 - **🚀 Nuxt.js Frontend:** A fast and modern Vue.js framework for server-side rendering (SSR).
 - **⚡ Redis as Primary Database:** Uses Redis for ultra-fast data access.
 - **📦 Dockerized Environment:** Fully containerized with `docker-compose` for easy setup and consistent development/production environments.
-- **📄 RedisJSON for Content:** Stores blog posts as structured JSON documents, offering flexibility and performance.
 - **📈 Sorted Sets for Timelines:** Efficiently retrieves posts in chronological order.
 - **📜 Seeding Script:** Includes a script to populate the database with sample posts.
 - **🔒 Data Persistence:** Configured with Docker named volumes to ensure your data persists across container restarts.
