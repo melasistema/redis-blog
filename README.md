@@ -48,14 +48,14 @@ Follow these instructions to get the project up and running on your local machin
 -   [Docker](https://www.docker.com/get-started) installed and running on your system.
 -   [Node.js](https://nodejs.org/) (v18.x or later) and [npm](https://www.npmjs.com/) installed.
 
-### 1. [Clone the Repository](#1-clone-the-repository)
+### 1. Clone the Repository
 
 ```bash
 git clone 'git@github.com:melasistema/redis-blog.git'
 cd 'redis-blog'
 ```
 
-### 2. [Install Dependencies](#2-install-dependencies)
+### 2. Install Dependencies
 
 Install the project's Node.js dependencies:
 
