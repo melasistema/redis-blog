@@ -79,6 +79,7 @@ async function createPost() {
         console.error('Failed to create post:', error);
     } finally {
         rl.close();
+        await redis.save();
         await redis.disconnect();
         console.log('Disconnected from Redis');
     }
