@@ -8,6 +8,8 @@
     "preview": "nuxt preview",
     "seed": "tsx seed-redis.ts",
     "new-post": "tsx scripts/new-post.ts",
+    "post:list": "tsx scripts/list-posts.ts",
+    "post:delete": "tsx scripts/delete-post.ts",
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {

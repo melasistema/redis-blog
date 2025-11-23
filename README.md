@@ -151,6 +151,24 @@ The script will prompt you for the following information:
 -   **Tags:** A comma-separated list of tags (e.g., "nuxt,redis,tutorial").
 -   **Author:** The author of the post. You can press Enter to use the default author specified in your `.env` file.
 
+### List All Posts
+
+To see a list of all post titles, run:
+
+```bash
+npm run post:list
+```
+
+### Delete a Post
+
+To delete a blog post, run the interactive command:
+
+```bash
+npm run post:delete
+```
+
+This will display a list of all posts. Enter the number of the post you wish to delete and confirm your choice.
+
 ### API Endpoints
 The application exposes the following API endpoints:
 
