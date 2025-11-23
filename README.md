@@ -20,10 +20,10 @@ A modern, high-performance blog boilerplate built with Nuxt.js 3, Redis Stack, a
 - [Special Thanks](#special-thanks)
 - [License](#license)
 
-## Overview
+## [Overview](#overview)
 This project provides a comprehensive boilerplate for a blog application, integrating Nuxt.js 3 for a modern frontend and API layer with Redis Stack (including RedisJSON for structured data and RediSearch for powerful search capabilities) as the backend data store. It's designed for developers looking for a high-performance, scalable, and easily deployable blog solution using Docker.
 
-## ✨ Features
+## ✨ [Features](#features)
 
 -   **🚀 Nuxt.js Frontend:** A fast and modern Vue.js framework for server-side rendering (SSR), providing excellent SEO and user experience.
 -   **⚡ Redis as Primary Database:** Utilizes Redis Stack for ultra-fast data access, leveraging RedisJSON for efficient document storage and RediSearch for advanced querying.
@@ -32,30 +32,30 @@ This project provides a comprehensive boilerplate for a blog application, integr
 -   **📜 Seeding Script:** Includes a convenient script to populate the database with sample posts, accelerating initial setup and testing.
 -   **🔒 Data Persistence:** Configured with Docker named volumes to ensure your valuable data persists across container restarts and updates.
 
-## 🛠️ Tech Stack
+## 🛠️ [Tech Stack](#tech-stack)
 
 -   **Frontend & API:** [Nuxt.js 3](https://nuxt.com/)
 -   **Database:** [Redis Stack](https://redis.io/docs/stack/) (RedisJSON, RediSearch)
 -   **Containerization:** [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
 -   **TypeScript Runtime:** [tsx](https://github.com/esbuild-kit/tsx)
 
-## 🚀 Getting Started
+## 🚀 [Getting Started](#getting-started)
 
 Follow these instructions to get the project up and running on your local machine.
 
-### Prerequisites
+### [Prerequisites](#prerequisites)
 
 -   [Docker](https://www.docker.com/get-started) installed and running on your system.
 -   [Node.js](https://nodejs.org/) (v18.x or later) and [npm](https://www.npmjs.com/) installed.
 
-### 1. Clone the Repository
+### 1. [Clone the Repository](#1-clone-the-repository)
 
 ```bash
 git clone 'git@github.com:melasistema/redis-blog.git'
 cd 'redis-blog'
 ```
 
-### 2. Install Dependencies
+### 2. [Install Dependencies](#2-install-dependencies)
 
 Install the project's Node.js dependencies:
 
@@ -63,7 +63,7 @@ Install the project's Node.js dependencies:
 npm install
 ```
 
-### 3. Configuration
+### 3. [Configuration](#configuration)
 
 The application uses environment variables for configuration. You can use the provided `.env.example` and `.env.secret.example` files as templates.
 
@@ -75,7 +75,7 @@ The application uses environment variables for configuration. You can use the pr
 
 *   **For Production:** The `.env.secret.example` file outlines sensitive variables. Create a `.env.secret` file for your production environment and ensure it is handled securely and not committed to version control.
 
-#### Environment Variables
+#### [Environment Variables](#environment-variables)
 
 The project uses two types of environment variables:
 
@@ -103,7 +103,7 @@ The project uses two types of environment variables:
 |---------------------------|------------------------------------------------------------------------------|
 | `REDIS_PASSWORD`          | The password for your Redis instance.                                        |
 
-### 4. Running with Docker Compose (Recommended)
+### 4. [Running with Docker Compose (Recommended)](#4-running-with-docker-compose-recommended)
 
 This command will build the Docker images and start both the Nuxt.js application and Redis Stack containers.
 
@@ -113,7 +113,7 @@ docker compose up -d --build
 
 Once started, access the application at: [http://localhost:3000](http://localhost:3000)
 
-### 5. Running Locally (Development)
+### 5. [Running Locally (Development)](#5-running-locally-development)
 
 To run the Nuxt.js application in development mode on your host machine while still using the Dockerized Redis:
 
@@ -127,7 +127,7 @@ To run the Nuxt.js application in development mode on your host machine while st
     ```
     Access the application at: [http://localhost:3000](http://localhost:3000)
 
-### 6. Seed the Database
+### 6. [Seed the Database](#6-seed-the-database)
 
 After starting either with Docker Compose or locally (and Redis is running), populate the Redis database with sample blog posts:
 
@@ -137,7 +137,7 @@ npm run seed
 
 ## How To
 
-### Create a New Post
+### [Create a New Post](#create-a-new-post)
 
 You can create a new blog post using an interactive command-line interface.
 
@@ -151,7 +151,7 @@ The script will prompt you for the following information:
 -   **Tags:** A comma-separated list of tags (e.g., "nuxt,redis,tutorial").
 -   **Author:** The author of the post. You can press Enter to use the default author specified in your `.env` file.
 
-### API Endpoints
+### [API Endpoints](#api-endpoints)
 The application exposes the following API endpoints:
 
 | Endpoint                  | Method | Description                                       |
@@ -161,23 +161,23 @@ The application exposes the following API endpoints:
 | `/api/tags`               | `GET`  | Retrieves a list of all unique tags.              |
 | `/api/posts/:slug/toggle-published` | `PUT` | Toggles the published status of a post. (Not yet implemented in UI) |
 
-### Troubleshooting
+### [Troubleshooting](#troubleshooting)
 
 -   **`ECONNREFUSED` errors:** If you encounter connection refused errors (e.g., for Redis or internal API calls), ensure both your Nuxt application and Redis services are running. Verify your environment variables (`NUXT_URL`, `NUXT_PUBLIC_REDIS_HOST`, `NUXT_PUBLIC_REDIS_PORT`) are correctly configured for your specific environment (Docker Compose vs. Local Development).
 -   **No posts or tags displayed:** Run `npm run seed` to populate the Redis database.
 -   **`[Vue Router warn]: No match found for location with path "/_nuxt/"`**: This warning is generally benign in a production build. It indicates an attempt to navigate to a static asset path and typically doesn't affect the core functionality of the application.
 
-### 🌟 Credits
+### 🌟 [Credits](#credits)
 
 This project is made possible by the inspiration, contributions, and tools of an incredible community.
 
 -   **👨‍💻 Author**: [Luca Visciola](https://github.com/melasistema) – Passionate drummer and developer. Reach out at [info@melasistema.com](mailto:info@melasistema.com) for inquiries or feedback.
 -   **🚀 Inspired by Salvatore Sanfilippo**: The foundation of this project stems from the unreachable talent of [Salvatore Sanfilippo](https://antirez.com), the creator of [Redis](https://github.com/redis/redis).
 
-### 🙌 Special Thanks
+### 🙌 [Special Thanks](#special-thanks)
 
 To the open-source community and all contributors—your dedication and collaboration inspire innovation and make projects like this possible. 🌟
 
-## 📝 License
+## 📝 [License](#license)
 
 This project is licensed under the MIT License. See the [LICENSE](./LICENSE.md) file for details.
