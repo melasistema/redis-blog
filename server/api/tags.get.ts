@@ -1,18 +1,15 @@
+/**
+ * Copyright (c) 2025 Luca Visciola
+ * SPDX-License-Identifier: MIT
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 import { defineEventHandler } from 'h3';
-import { getRedis } from '~/server/utils/redis';
+import { TagRepository } from '~/server/repositories/TagRepository';
 
-export default defineEventHandler(async (event) => {
-  const redis = await getRedis();
-
-  try {
-    // Retrieve all unique tags from the 'tags:all' SET
-    const tags = await redis.sMembers('tags:all');
-
-    return { success: true, tags };
-
-  } catch (error) {
-    console.error('Failed to fetch tags:', error);
-    event.node.res.statusCode = 500;
-    return { success: false, error: 'Failed to fetch tags' };
-  }
+export default defineEventHandler(async () => {
+  const tags = await TagRepository.all();
+  return { success: true, tags };
 });

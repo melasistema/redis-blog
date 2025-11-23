@@ -32,7 +32,7 @@
             <h3>{{ post.title }}</h3>
             <div class="post-meta">
               <span>By {{ post.author }}</span>
-              <span>{{ new Date(post.createdAt).toLocaleDateString() }}</span>
+              <span>{{ new Date(post.createdAt).toISOString().split('T')[0] }}</span>
             </div>
             <div class="post-content" v-html="post.content"></div>
             <div class="tags">
