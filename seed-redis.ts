@@ -82,6 +82,14 @@ async function seedRedis() {
         value: postKey,
       });
       multi.hSet('slugs', slug, postKey);
+
+      // Add tags to global and tag-specific SETs
+      if (post.tags && post.tags.length > 0) {
+        for (const tag of post.tags) {
+          multi.sAdd('tags:all', tag); // Add tag to the global set of all tags
+          multi.sAdd(`tag:${slugify(tag)}`, postKey); // Add postKey to the set for this specific tag
+        }
+      }
       await multi.exec();
 
       console.log(`Seeded post: "${post.title}" with key "${postKey}"`);

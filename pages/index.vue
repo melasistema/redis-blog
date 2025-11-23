@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <header>
-      <h1>Redis & Nuxt Blog</h1>
-      <p>A powerful and elegant blog architecture inspired by <a href="https://antirez.com/" target="_blank">Salvatore Sanfilippo.</a></p>
+      <h1>This is your Blog build with Nuxt and Redis</h1>
+      <p>A powerful and elegant blog architecture inspired by <a href="https://antirez.com/" target="_blank" rel="noopener noreferrer">Salvatore Sanfilippo</a></p>
     </header>
 
     <div class="controls">
@@ -13,6 +13,17 @@
     </div>
 
     <main>
+      <section class="tag-cloud-section">
+        <h2>Tags</h2>
+        <div v-if="tagsPending" class="loading">Loading tags...</div>
+        <div v-else-if="uniqueTags && uniqueTags.length > 0" class="tag-cloud">
+          <span v-for="tag in uniqueTags" :key="tag" class="tag">{{ tag }}</span>
+        </div>
+        <div v-else class="no-tags">
+          <p>No tags found.</p>
+        </div>
+      </section>
+
       <h2>Recent Posts</h2>
       <div v-if="pending" class="loading">Loading posts...</div>
       <div v-else-if="posts && posts.length > 0" class="posts-grid">
@@ -50,6 +61,14 @@ const { data: result, pending, refresh } = await useFetch('/api/posts', {
 });
 
 const posts = computed(() => result.value);
+
+// Fetch unique tags from our API endpoint
+const { data: tagsResult, pending: tagsPending } = await useFetch('/api/tags', {
+  transform: (res) => res.tags || [],
+  default: () => ({ tags: [] })
+});
+
+const uniqueTags = computed(() => tagsResult.value);
 
 // Function to create a new post
 const createPost = async () => {
@@ -190,5 +209,42 @@ main h2 {
   border-radius: 4px;
   font-size: 0.8rem;
   margin-right: 5px;
+}
+
+/* New styles for tag cloud */
+.tag-cloud-section {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 2rem;
+}
+
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.tag-cloud .tag {
+  background-color: #e6f7ff; /* Lighter blue for tag cloud tags */
+  color: #0056b3; /* Darker blue */
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.tag-cloud .tag:hover {
+  background-color: #0056b3;
+  color: white;
+  cursor: pointer;
+}
+
+.no-tags {
+  text-align: center;
+  color: #777;
+  font-size: 1.1rem;
+  padding: 2rem;
 }
 </style>
