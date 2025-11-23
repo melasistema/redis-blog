@@ -84,6 +84,7 @@ The application uses environment variables for configuration. You can use the pr
 | `NUXT_PUBLIC_REDIS_HOST`  | Redis hostname for connections, exposed via public runtime config.           | `redis`                            | `localhost`                       |
 | `NUXT_PUBLIC_REDIS_PORT`  | Redis port for connections, exposed via public runtime config.               | `6379`                             | `6380`                            |
 | `REDIS_PASSWORD`          | The password for your Redis instance. (Handled in `.env.secret`)            | `your-secure-password`             | `your-secure-password`            |
+| `DEFAULT_AUTHOR`          | The default author name to use when creating new posts via the CLI.         | `Admin`                            | `CLI User`                        |
 
 ### 4. Running with Docker Compose (Recommended)
 
@@ -121,15 +122,17 @@ npm run seed
 
 ### Create a New Post
 
-You can create a new blog post using the command-line interface.
+You can create a new blog post using an interactive command-line interface.
 
 ```bash
-npm run new-post "{title}" "{content}" "{tags}"
+npm run new-post
 ```
 
--   `{title}`: The title of your blog post.
--   `{content}`: The full HTML content of your post.
--   `{tags}`: A comma-separated list of tags (e.g., "nuxt,redis,tutorial").
+The script will prompt you for the following information:
+-   **Title:** The title of your blog post.
+-   **Content:** The full HTML content of your post.
+-   **Tags:** A comma-separated list of tags (e.g., "nuxt,redis,tutorial").
+-   **Author:** The author of the post. You can press Enter to use the default author specified in your `.env` file.
 
 ### API Endpoints
 The application exposes the following API endpoints:

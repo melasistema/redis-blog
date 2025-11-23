@@ -1,6 +1,6 @@
-
 import { createClient } from 'redis';
 import * as dotenv from 'dotenv';
+import * as readline from 'readline';
 
 dotenv.config();
 
@@ -15,6 +15,13 @@ function slugify(text: string): string {
         .replace(/-+$/, '');
 }
 
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
+const question = (query: string) => new Promise<string>((resolve) => rl.question(query, resolve));
+
 async function createPost() {
     const redisUrl = process.env.NUXT_REDIS_URL || 'redis://localhost:6380';
     const redis = createClient({ url: redisUrl });
@@ -25,15 +32,13 @@ async function createPost() {
         await redis.connect();
         console.log('Connected to Redis');
 
-        const args = process.argv.slice(2);
-        if (args.length < 3) {
-            console.error('Usage: tsx scripts/new-post.ts <title> <content> <tags>');
-            process.exit(1);
-        }
+        const title = await question('Title: ');
+        const content = await question('Content: ');
+        const tagsStr = await question('Tags (comma-separated): ');
+        const defaultAuthor = process.env.DEFAULT_AUTHOR || 'CLI User';
+        const author = await question(`Author (${defaultAuthor}): `) || defaultAuthor;
 
-        const [title, content, tagsStr] = args;
         const tags = tagsStr.split(',').map(tag => tag.trim());
-
         const id = Math.random().toString(36).substring(2, 12);
         const slug = slugify(title);
         const createdAt = new Date().toISOString();
@@ -43,7 +48,7 @@ async function createPost() {
             slug,
             title,
             content,
-            author: 'CLI', 
+            author,
             tags,
             createdAt,
             published: true,
@@ -73,6 +78,7 @@ async function createPost() {
     } catch (error) {
         console.error('Failed to create post:', error);
     } finally {
+        rl.close();
         await redis.disconnect();
         console.log('Disconnected from Redis');
     }
