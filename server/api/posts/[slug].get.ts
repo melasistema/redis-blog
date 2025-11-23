@@ -9,15 +9,20 @@ export default defineEventHandler(async (event) => {
   // Get the slug from the URL (e.g., /api/posts/my-first-post)
   const slug = getRouterParam(event, 'slug');
 
-  if (!redisUrl) {
-    throw new Error('NUXT_REDIS_URL is not defined');
+  if (!config.public.redisHost || !config.public.redisPort) {
+    throw new Error('REDIS_HOST or REDIS_PORT is not defined');
   }
 
   if (!slug) {
     throw new Error('Post slug is not defined');
   }
 
-  const redis = createClient({ url: redisUrl });
+  const redis = createClient({
+    socket: {
+      host: config.public.redisHost,
+      port: config.public.redisPort
+    }
+  });
 
   try {
     await redis.connect();

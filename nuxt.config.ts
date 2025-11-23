@@ -3,7 +3,9 @@ export default defineNuxtConfig({
   // Expose environment variables to the Nuxt application
   runtimeConfig: {
     public: {
-      redisUrl: process.env.NUXT_REDIS_URL
+      redisUrl: process.env.NUXT_REDIS_URL,
+      redisHost: process.env.NUXT_PUBLIC_REDIS_HOST,
+      redisPort: parseInt(process.env.NUXT_PUBLIC_REDIS_PORT || '6379')
     }
   },
   nitro: {

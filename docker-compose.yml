@@ -13,9 +13,13 @@ services:
       - NUXT_HOST=0.0.0.0
       # The port for the Nuxt app
       - NUXT_PORT=3000
+      # Explicitly set the internal app URL for server-side requests
+      - NUXT_URL=http://0.0.0.0:3000
       # The URL for connecting to our Redis instance.
       # 'redis' is the service name defined below. Docker's internal DNS resolves it.
       - NUXT_REDIS_URL=redis://redis:6379
+      - NUXT_PUBLIC_REDIS_HOST=redis
+      - NUXT_PUBLIC_REDIS_PORT=6379
     # Ensure Redis is started before the Nuxt app
     depends_on:
       - redis

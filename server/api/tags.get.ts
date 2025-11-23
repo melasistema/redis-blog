@@ -6,11 +6,16 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
   const redisUrl = config.public.redisUrl;
 
-  if (!redisUrl) {
-    throw new Error('NUXT_REDIS_URL is not defined');
+  if (!config.public.redisHost || !config.public.redisPort) {
+    throw new Error('REDIS_HOST or REDIS_PORT is not defined');
   }
 
-  const redis = createClient({ url: redisUrl });
+  const redis = createClient({
+    socket: {
+      host: config.public.redisHost,
+      port: config.public.redisPort
+    }
+  });
 
   try {
     await redis.connect();
