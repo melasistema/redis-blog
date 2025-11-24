@@ -103,7 +103,18 @@ The project uses two types of environment variables:
 |---------------------------|------------------------------------------------------------------------------|
 | `REDIS_PASSWORD`          | The password for your Redis instance.                                        |
 
-### 4. [Running with Docker Compose (Recommended)](#4-running-with-docker-compose-recommended)
+### Blog Configuration
+
+The blog's core settings are defined in `config/blog.config.ts`. You can modify this file to customize your blog's identity and appearance.
+
+| Property           | Description                                                                 | Default Value                         |
+|--------------------|-----------------------------------------------------------------------------|---------------------------------------|
+| `siteName`         | The name of your blog, displayed in the header and page titles.             | `Redis Nuxt Blog`                     |
+| `contactEmail`     | A contact email address, which can be used in your templates (e.g., footer). | `info@melasistema.com`                |
+| `useGoogleFonts`   | A boolean to enable or disable Google Fonts for the blog.                   | `true`                                |
+| `googleFontToUse`  | Specifies the Google Font family and weights to use (e.g., `Open Sans:wght@400;700&display=swap`). Only active if `useGoogleFonts` is `true`. | `Open Sans:wght@400;700&display=swap` |
+
+### 4. Running with Docker Compose (Recommended)
 
 This command will build the Docker images and start both the Nuxt.js application and Redis Stack containers.
 
