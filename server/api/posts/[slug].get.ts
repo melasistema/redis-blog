@@ -8,6 +8,7 @@
 
 import { defineEventHandler, getRouterParam } from 'h3';
 import { PostRepository } from '~/server/repositories/PostRepository';
+import { defaultBlogConfig } from '~/config/blog.config';
 
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug');
@@ -18,5 +19,10 @@ export default defineEventHandler(async (event) => {
     return { success: false, error: 'Post not found' };
   }
 
-  return { success: true, post };
+  let neighbors = null;
+  if (defaultBlogConfig.postNavigation.enabled) {
+    neighbors = await PostRepository.getNeighbors(slug);
+  }
+
+  return { success: true, post, neighbors };
 });

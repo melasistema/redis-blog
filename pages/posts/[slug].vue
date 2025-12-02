@@ -26,6 +26,23 @@
         <p>Post not found.</p>
         <NuxtLink to="/">Go back home</NuxtLink>
       </div>
+
+      <nav v-if="post && blogConfig.postNavigation.enabled && (neighbors.prev || neighbors.next)" class="post-navigation">
+        <NuxtLink v-if="neighbors.prev" :to="`/posts/${neighbors.prev.slug}`" class="nav-link prev">
+          <span class="arrow">&larr;</span>
+          <span class="text">
+            <span class="label">Previous Post</span>
+            <span class="title">{{ neighbors.prev.title }}</span>
+          </span>
+        </NuxtLink>
+        <NuxtLink v-if="neighbors.next" :to="`/posts/${neighbors.next.slug}`" class="nav-link next">
+          <span class="text">
+            <span class="label">Next Post</span>
+            <span class="title">{{ neighbors.next.title }}</span>
+          </span>
+          <span class="arrow">&rarr;</span>
+        </NuxtLink>
+      </nav>
     </main>
   </div>
 </template>
@@ -41,10 +58,12 @@ const runtimeConfig = useRuntimeConfig();
 const blogConfig = runtimeConfig.public.blogConfig;
 
 const { data: result, pending, error } = await useFetch(`/api/posts/${slug}`, {
-  transform: (res) => res.post || null,
+  transform: (res) => res || { post: null, neighbors: null },
+  default: () => ({ post: null, neighbors: { prev: null, next: null } }),
 });
 
-const post = computed(() => result.value);
+const post = computed(() => result.value.post);
+const neighbors = computed(() => result.value.neighbors || { prev: null, next: null });
 </script>
 
 <style scoped>
@@ -141,5 +160,59 @@ main {
   margin-right: 8px;
   margin-bottom: 8px;
   text-decoration: none;
+}
+
+.post-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--secondary-color-light);
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-decoration: none;
+  color: var(--text-color);
+  padding: 1rem;
+  border-radius: 8px;
+  max-width: 50%;
+  border: 1px solid transparent;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.nav-link:hover {
+  background-color: var(--secondary-color-light);
+  border-color: var(--secondary-color);
+}
+
+.nav-link.next {
+  text-align: right;
+  justify-content: flex-end;
+}
+
+.nav-link .text {
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-link .label {
+  font-size: 0.9rem;
+  color: var(--secondary-color);
+  margin-bottom: 0.25rem;
+}
+
+.nav-link .title {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-link .arrow {
+  font-size: 1.5rem;
+  color: var(--primary-color);
 }
 </style>

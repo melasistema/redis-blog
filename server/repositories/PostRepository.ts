@@ -53,6 +53,38 @@ export const PostRepository = {
     return redis.json.get(key);
   },
 
+  async getNeighbors(slug: string) {
+    const redis = await getRedis();
+    const postKey = await redis.hGet('slugs', slug);
+    if (!postKey) return { prev: null, next: null };
+
+    // Get rank from newest to oldest
+    const rank = await redis.zRevRank('posts:by_date', postKey);
+    if (rank === null) return { prev: null, next: null };
+
+    // Get keys of neighbors
+    const prevKey = (await redis.zRange('posts:by_date', rank + 1, rank + 1, { REV: true }))[0];
+    const nextKey = (await redis.zRange('posts:by_date', rank - 1, rank - 1, { REV: true }))[0];
+
+    let prevPost = null;
+    if (prevKey) {
+        const post = await redis.json.get(prevKey);
+        if (post) {
+            prevPost = { slug: post.slug, title: post.title };
+        }
+    }
+
+    let nextPost = null;
+    if (nextKey) {
+        const post = await redis.json.get(nextKey);
+        if (post) {
+            nextPost = { slug: post.slug, title: post.title };
+        }
+    }
+
+    return { prev: prevPost, next: nextPost };
+  },
+
   async getTagsForPost(postId: string) {
     const redis = await getRedis();
     return redis.sMembers(`post:${postId}:tags`);

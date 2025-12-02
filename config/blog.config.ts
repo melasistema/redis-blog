@@ -26,6 +26,10 @@ export interface PaginationConfig {
     postsPerPage: number;
 }
 
+export interface PostNavigationConfig {
+    enabled: boolean;
+}
+
 export interface BlogConfig {
     siteName: string;
     contactEmail: string;
@@ -35,6 +39,7 @@ export interface BlogConfig {
     typography: TypographyConfig;
     colors: ColorConfig;
     pagination: PaginationConfig;
+    postNavigation: PostNavigationConfig;
 }
 
 export const defaultBlogConfig: BlogConfig = {
@@ -75,5 +80,8 @@ export const defaultBlogConfig: BlogConfig = {
     pagination: {
         enabled: true,
         postsPerPage: 2,
+    },
+    postNavigation: {
+        enabled: true,
     },
 };
