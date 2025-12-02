@@ -6,10 +6,7 @@
     </header>
 
     <div class="controls">
-      <!-- <button @click="createPost" :disabled="isCreating">
-        {{ isCreating ? 'Creating...' : 'Create New Post' }}
-      </button> -->
-      <p v-if="error" class="error-message">{{ error }}</p>
+      <p v-if="postsError" class="error-message">{{ postsError.message }}</p>
     </div>
 
     <main>
@@ -25,7 +22,7 @@
       </section>
 
       <h2>Recent Posts</h2>
-      <div v-if="pending" class="loading">Loading posts...</div>
+      <div v-if="postsPending" class="loading">Loading posts...</div>
       <div v-else-if="posts && posts.length > 0" class="posts-grid">
         <NuxtLink v-for="post in posts" :key="post.id" :to="`/posts/${post.slug}`" class="post-link">
           <div class="post-card">
@@ -44,26 +41,50 @@
       <div v-else class="no-posts">
         <p>No posts yet.</p>
       </div>
+
+      <nav v-if="paginationEnabled && meta && meta.totalPages > 1" class="pagination" aria-label="Pagination">
+        <button @click="changePage(meta.page - 1)" :disabled="meta.page <= 1" class="page-link prev">
+          &larr; Previous
+        </button>
+        <span class="page-info">Page {{ meta.page }} of {{ meta.totalPages }}</span>
+        <button @click="changePage(meta.page + 1)" :disabled="meta.page >= meta.totalPages" class="page-link next">
+          Next &rarr;
+        </button>
+      </nav>
     </main>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'; // Added computed here
+import { ref, computed, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
-const error = ref(null);
-const isCreating = ref(false);
-
-const runtimeConfig = useRuntimeConfig(); // Access runtime config
+const route = useRoute();
+const router = useRouter();
+const runtimeConfig = useRuntimeConfig();
 const blogConfig = runtimeConfig.public.blogConfig;
+const paginationEnabled = blogConfig.pagination.enabled;
 
-// Fetch posts from our API endpoint
-const { data: result, pending, refresh } = await useFetch('/api/posts', {
-  transform: (res) => res.posts || [],
-  default: () => ({ posts: [] })
+const page = ref(parseInt(route.query.page) || 1);
+
+// Fetch posts from our API endpoint with pagination
+const { data: postsData, pending: postsPending, error: postsError, refresh: refreshPosts } = await useFetch('/api/posts', {
+  query: { page },
+  watch: [page],
+  transform: (res) => res || { posts: [], meta: {} },
+  default: () => ({ posts: [], meta: {} })
 });
 
-const posts = computed(() => result.value);
+const posts = computed(() => postsData.value.posts);
+const meta = computed(() => postsData.value.meta);
+
+// Function to change page
+const changePage = (newPage) => {
+  if (newPage > 0 && newPage <= meta.value.totalPages) {
+    page.value = newPage;
+    router.push({ query: { page: newPage } });
+  }
+};
 
 // Fetch unique tags from our API endpoint
 const { data: tagsResult, pending: tagsPending } = await useFetch('/api/tags', {
@@ -72,34 +93,6 @@ const { data: tagsResult, pending: tagsPending } = await useFetch('/api/tags', {
 });
 
 const uniqueTags = computed(() => tagsResult.value);
-
-// Function to create a new post
-const createPost = async () => {
-  isCreating.value = true;
-  error.value = null;
-  try {
-    const response = await $fetch('/api/posts', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        title: `Post at ${new Date().toLocaleTimeString()}`,
-        content: `<p>This is a new post created at ${new Date().toLocaleString()}.</p>`,
-        tags: ['new', 'live']
-      })
-    });
-    if (response.success) {
-      // Refresh the list of posts after creating a new one
-      await refresh();
-    } else {
-      throw new Error(response.error || 'Failed to create post.');
-    }
-  } catch (err) {
-    error.value = err.message;
-    console.error('Error creating post:', err);
-  } finally {
-    isCreating.value = false;
-  }
-};
 </script>
 
 <style scoped>
@@ -125,26 +118,6 @@ header h1 {
 .controls {
   text-align: center;
   margin-bottom: 2rem;
-}
-
-button {
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  font-size: 1rem;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-button:disabled {
-  background-color: var(--secondary-color-light);
-  cursor: not-allowed;
-}
-
-button:hover:not(:disabled) {
-  background-color: var(--primary-color-dark);
 }
 
 .error-message {
@@ -213,7 +186,6 @@ main h2 {
   margin-right: 5px;
 }
 
-/* New styles for tag cloud */
 .tag-cloud-section {
   margin-bottom: 2rem;
   border-bottom: 1px solid var(--secondary-color-light);
@@ -248,5 +220,38 @@ main h2 {
   color: var(--secondary-color);
   font-size: 1.1rem;
   padding: 2rem;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2.5rem;
+  gap: 1rem;
+}
+
+.page-link {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.page-link:disabled {
+  background-color: var(--secondary-color-light);
+  cursor: not-allowed;
+}
+
+.page-link:hover:not(:disabled) {
+  background-color: var(--primary-color-dark);
+}
+
+.page-info {
+  color: var(--secondary-color);
+  font-weight: 500;
 }
 </style>

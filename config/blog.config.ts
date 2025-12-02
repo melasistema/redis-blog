@@ -21,6 +21,11 @@ export interface ColorConfig {
     background: string;
 }
 
+export interface PaginationConfig {
+    enabled: boolean;
+    postsPerPage: number;
+}
+
 export interface BlogConfig {
     siteName: string;
     contactEmail: string;
@@ -29,6 +34,7 @@ export interface BlogConfig {
     useGoogleFonts: boolean;
     typography: TypographyConfig;
     colors: ColorConfig;
+    pagination: PaginationConfig;
 }
 
 export const defaultBlogConfig: BlogConfig = {
@@ -65,5 +71,9 @@ export const defaultBlogConfig: BlogConfig = {
         secondary: '#6c757d',
         text: '#212529',
         background: '#ffffff',
+    },
+    pagination: {
+        enabled: true,
+        postsPerPage: 2,
     },
 };

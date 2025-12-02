@@ -24,6 +24,26 @@ export const PostRepository = {
     return results.filter(Boolean);
   },
 
+  async getPaginated(offset: number, limit: number) {
+    const redis = await getRedis();
+    const keys = await redis.zRange('posts:by_date', offset, offset + limit - 1, { REV: true });
+
+    if (keys.length === 0) return [];
+
+    const multi = redis.multi();
+    for (const key of keys) {
+      multi.json.get(key);
+    }
+    const results = await multi.exec();
+
+    return results.filter(Boolean);
+  },
+
+  async getTotalCount() {
+    const redis = await getRedis();
+    return redis.zCard('posts:by_date');
+  },
+
   async getBySlug(slug: string) {
     const redis = await getRedis();
 
