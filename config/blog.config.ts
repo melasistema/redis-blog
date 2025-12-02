@@ -30,6 +30,11 @@ export interface PostNavigationConfig {
     enabled: boolean;
 }
 
+export interface FaviconConfig {
+    enabled: boolean;
+    path: string; // Path within the public directory
+}
+
 export interface BlogConfig {
     siteName: string;
     contactEmail: string;
@@ -40,6 +45,7 @@ export interface BlogConfig {
     colors: ColorConfig;
     pagination: PaginationConfig;
     postNavigation: PostNavigationConfig;
+    favicon: FaviconConfig;
 }
 
 export const defaultBlogConfig: BlogConfig = {
@@ -83,5 +89,9 @@ export const defaultBlogConfig: BlogConfig = {
     },
     postNavigation: {
         enabled: true,
+    },
+    favicon: {
+        enabled: true,
+        path: '/',
     },
 };

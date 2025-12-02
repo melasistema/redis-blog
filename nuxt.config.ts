@@ -45,6 +45,21 @@ function getGoogleFontsFamilies() {
     return families;
 }
 
+// Helper function to build the favicon links
+const buildFaviconLinks = () => {
+    if (!defaultBlogConfig.favicon.enabled) {
+        return [];
+    }
+    const path = defaultBlogConfig.favicon.path;
+    return [
+        { rel: 'icon', type: 'image/svg+xml', href: `${path}favicon.svg` },
+        { rel: 'icon', type: 'image/png', sizes: '192x192', href: `${path}icon-192.png` },
+        { rel: 'icon', type: 'image/png', sizes: '512x512', href: `${path}icon-512.png` },
+        { rel: 'apple-touch-icon', href: `${path}apple-touch-icon.png` },
+        { rel: 'manifest', href: `${path}manifest.webmanifest` },
+    ];
+}
+
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -69,6 +84,10 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: defaultBlogConfig.siteName,
+      link: buildFaviconLinks(),
+      meta: [
+          { name: 'theme-color', content: defaultBlogConfig.colors.primary },
+      ],
     },
   },
   nitro: {
