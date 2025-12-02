@@ -1,9 +1,9 @@
 <template>
-  <div :style="{ fontFamily: fontCssFamily }">
+  <div>
     <slot />
     <footer class="footer">
       <div class="container">
-        <p>&copy; 2025 <a href="https://github.com/melasistema" target="_blank" rel="noopener noreferrer">{{ blogConfig.siteName }}</a></p>
+        <p>{{ blogConfig.copyrightNotice }} <a :href="blogConfig.copyrightUrl" target="_blank" rel="noopener noreferrer">{{ blogConfig.siteName }}</a></p>
       </div>
     </footer>
   </div>
@@ -15,57 +15,71 @@ import { computed } from 'vue';
 const runtimeConfig = useRuntimeConfig();
 const blogConfig = runtimeConfig.public.blogConfig;
 
-const extractFontName = (input: string) => {
-  if (input.startsWith('http')) {
-    try {
-      const url = new URL(input);
-      const familyParam = url.searchParams.get('family');
-      if (familyParam) {
-        return familyParam.split(':')[0].replace(/\+/g, ' ');
-      }
-    } catch (e) {
-      console.error("Failed to parse Google Font URL:", e);
+const bodyWeight = computed(() => {
+    const weights = blogConfig.typography.body.weights;
+    if (weights.includes('..')) {
+        return 400; // A sensible default for body text
     }
-  } else {
-    return input.split(':')[0];
-  }
-  return '';
-};
-
-
-const fontCssFamily = computed(() => {
-  if (blogConfig.useGoogleFonts && blogConfig.googleFontToUse) {
-    const fontName = extractFontName(blogConfig.googleFontToUse);
-    if (fontName) {
-      return `'${fontName}', sans-serif`;
-    }
-  }
-  return "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+    return weights.split(';')[0];
 });
+
+useHead({
+  style: [
+    {
+      innerHTML: computed(() => `
+        :root {
+          --primary-color: ${blogConfig.colors.primary};
+          --primary-color-dark: #0056b3; /* A darker shade of #007bff */
+          --secondary-color: ${blogConfig.colors.secondary};
+          --secondary-color-light: #d6d8db; /* A lighter shade of #6c757d */
+          --text-color: ${blogConfig.colors.text};
+          --background-color: ${blogConfig.colors.background};
+          --error-color: #e53e3e; /* Standard red for errors */
+          --error-color-light: #ffebeb; /* Lighter red for error backgrounds */
+        }
+        body {
+          font-family: '${blogConfig.typography.body.fontFamily}', sans-serif;
+          font-weight: ${bodyWeight.value};
+          color: var(--text-color);
+          background-color: var(--background-color);
+        }
+        h1 {
+          font-family: '${blogConfig.typography.h1.fontFamily}', sans-serif;
+          font-weight: ${blogConfig.typography.h1.weights};
+        }
+        h2 {
+          font-family: '${blogConfig.typography.h2.fontFamily}', sans-serif;
+          font-weight: ${blogConfig.typography.h2.weights};
+        }
+        h3 {
+          font-family: '${blogConfig.typography.h3.fontFamily}', sans-serif;
+          font-weight: ${blogConfig.typography.h3.weights};
+        }
+        h4 {
+          font-family: '${blogConfig.typography.h4.fontFamily}', sans-serif;
+          font-weight: ${blogConfig.typography.h4.weights};
+        }
+        .footer a {
+          color: var(--primary-color);
+        }
+      `)
+    }
+  ]
+})
 </script>
 
 <style scoped>
 .footer {
   margin-top: 4rem;
   padding: 2rem 0;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--secondary-color);
   text-align: center;
-  color: #777;
+  color: var(--secondary-color);
   font-size: 0.9rem;
 }
 
 .footer a {
-  color: #007bff;
+  color: var(--primary-color);
   text-decoration: none;
-}
-
-.footer a:hover {
-  text-decoration: underline;
-}
-
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0 2rem;
 }
 </style>

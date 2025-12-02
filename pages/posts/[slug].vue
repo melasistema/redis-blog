@@ -32,9 +32,13 @@
 
 <script setup>
 import { useRoute } from 'vue-router';
+import { computed } from 'vue';
 
 const route = useRoute();
 const slug = route.params.slug;
+
+const runtimeConfig = useRuntimeConfig();
+const blogConfig = runtimeConfig.public.blogConfig;
 
 const { data: result, pending, error } = await useFetch(`/api/posts/${slug}`, {
   transform: (res) => res.post || null,
@@ -45,17 +49,16 @@ const post = computed(() => result.value);
 
 <style scoped>
 .container {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
-  color: #333;
+  color: var(--text-color);
 }
 
 .back-link {
   display: inline-block;
   margin-bottom: 1.5rem;
-  color: #007bff;
+  color: var(--primary-color);
   text-decoration: none;
   font-weight: 500;
 }
@@ -67,7 +70,7 @@ const post = computed(() => result.value);
 header h1 {
   font-size: 2.8rem;
   margin-bottom: 1.5rem;
-  color: #003c3c;
+  color: var(--text-color);
   text-align: center;
 }
 
@@ -83,14 +86,14 @@ main {
 }
 
 .error-message {
-  color: #e53e3e;
-  background-color: #ffebeb;
-  border: 1px solid #e53e3e;
+  color: var(--error-color);
+  background-color: var(--error-color-light);
+  border: 1px solid var(--error-color);
 }
 
 .post-content-wrapper {
-  background-color: #fefefe;
-  border: 1px solid #eaeaea;
+  background-color: var(--background-color);
+  border: 1px solid var(--secondary-color-light);
   border-radius: 8px;
   padding: 2rem;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
@@ -98,24 +101,24 @@ main {
 
 .post-meta {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--secondary-color);
   margin-bottom: 1.5rem;
   display: flex;
   justify-content: space-between;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--secondary-color-light);
   padding-bottom: 0.8rem;
 }
 
 .post-content {
   line-height: 1.8;
   font-size: 1.1rem;
-  color: #444;
+  color: var(--text-color);
 }
 
 .post-content h2, .post-content h3, .post-content h4, .post-content h5, .post-content h6 {
   margin-top: 1.5rem;
   margin-bottom: 0.8rem;
-  color: #003c3c;
+  color: var(--text-color);
 }
 
 .post-content p {
@@ -125,13 +128,13 @@ main {
 .tags {
   margin-top: 2rem;
   padding-top: 1rem;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--secondary-color-light);
 }
 
 .tag {
   display: inline-block;
-  background-color: #e0f2f1;
-  color: #00796b;
+  background-color: var(--secondary-color-light);
+  color: var(--primary-color);
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 0.85rem;

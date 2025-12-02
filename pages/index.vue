@@ -49,10 +49,13 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue'; // Added computed here
 
 const error = ref(null);
 const isCreating = ref(false);
+
+const runtimeConfig = useRuntimeConfig(); // Access runtime config
+const blogConfig = runtimeConfig.public.blogConfig;
 
 // Fetch posts from our API endpoint
 const { data: result, pending, refresh } = await useFetch('/api/posts', {
@@ -101,17 +104,16 @@ const createPost = async () => {
 
 <style scoped>
 .container {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
-  color: #333;
+  color: var(--text-color);
 }
 
 header {
   text-align: center;
   margin-bottom: 2rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--secondary-color-light);
   padding-bottom: 1rem;
 }
 
@@ -126,7 +128,7 @@ header h1 {
 }
 
 button {
-  background-color: #00DC82; /* Nuxt Green */
+  background-color: var(--primary-color);
   color: white;
   border: none;
   padding: 10px 20px;
@@ -137,16 +139,16 @@ button {
 }
 
 button:disabled {
-  background-color: #ccc;
+  background-color: var(--secondary-color-light);
   cursor: not-allowed;
 }
 
 button:hover:not(:disabled) {
-  background-color: #00b36b;
+  background-color: var(--primary-color-dark);
 }
 
 .error-message {
-  color: #e53e3e; /* Red */
+  color: var(--error-color);
   margin-top: 1rem;
 }
 
@@ -157,7 +159,7 @@ main h2 {
 
 .loading, .no-posts {
   text-align: center;
-  color: #777;
+  color: var(--secondary-color);
   font-size: 1.1rem;
   padding: 2rem;
 }
@@ -168,8 +170,8 @@ main h2 {
 }
 
 .post-card {
-  background-color: #f9f9f9;
-  border: 1px solid #eaeaea;
+  background-color: var(--background-color);
+  border: 1px solid var(--secondary-color-light);
   border-radius: 8px;
   padding: 1.5rem;
   transition: box-shadow 0.2s;
@@ -181,19 +183,19 @@ main h2 {
 
 .post-card h3 {
   margin-top: 0;
-  color: #003c3c;
+  color: var(--text-color);
 }
 
 .post-meta {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--secondary-color);
   margin-bottom: 1rem;
   display: flex;
   justify-content: space-between;
 }
 
 .post-content {
-  color: #444;
+  color: var(--text-color);
   line-height: 1.6;
 }
 
@@ -203,8 +205,8 @@ main h2 {
 
 .tag {
   display: inline-block;
-  background-color: #e0f2f1;
-  color: #00796b;
+  background-color: var(--secondary-color-light);
+  color: var(--primary-color);
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 0.8rem;
@@ -214,7 +216,7 @@ main h2 {
 /* New styles for tag cloud */
 .tag-cloud-section {
   margin-bottom: 2rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--secondary-color-light);
   padding-bottom: 2rem;
 }
 
@@ -226,8 +228,8 @@ main h2 {
 }
 
 .tag-cloud .tag {
-  background-color: #e6f7ff; /* Lighter blue for tag cloud tags */
-  color: #0056b3; /* Darker blue */
+  background-color: var(--secondary-color-light);
+  color: var(--primary-color-dark);
   padding: 8px 15px;
   border-radius: 20px;
   font-size: 0.9rem;
@@ -236,14 +238,14 @@ main h2 {
 }
 
 .tag-cloud .tag:hover {
-  background-color: #0056b3;
+  background-color: var(--primary-color-dark);
   color: white;
   cursor: pointer;
 }
 
 .no-tags {
   text-align: center;
-  color: #777;
+  color: var(--secondary-color);
   font-size: 1.1rem;
   padding: 2rem;
 }
