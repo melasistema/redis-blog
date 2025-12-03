@@ -45,6 +45,8 @@ export interface BlogConfig {
     contactEmail: string;
     copyrightNotice: string;
     copyrightUrl: string;
+    headerTitle: string;
+    headerTagline: string;
     useGoogleFonts: boolean;
     typography: TypographyConfig;
     colors: ColorConfig;
@@ -59,6 +61,8 @@ export const defaultBlogConfig: BlogConfig = {
     contactEmail: 'info@melasistema.com',
     copyrightNotice: '© {year} {siteName}. All rights reserved.',
     copyrightUrl: 'https://github.com/melasistema',
+    headerTitle: 'This is your Blog build with Nuxt and Redis',
+    headerTagline: 'A powerful and elegant blog architecture inspired by <a href="https://antirez.com/" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Salvatore Sanfilippo</a>',
     useGoogleFonts: true,
     typography: {
         body: {

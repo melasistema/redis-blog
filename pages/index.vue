@@ -1,8 +1,8 @@
 <template>
   <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <header class="text-center mb-8 border-b border-secondary-light pb-4">
-      <h1 class="font-h1 text-4xl m-0 text-text">This is your Blog build with Nuxt and Redis</h1>
-      <p class="text-lg text-secondary">A powerful and elegant blog architecture inspired by <a href="https://antirez.com/" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Salvatore Sanfilippo</a></p>
+      <h1 class="font-h1 text-4xl m-0 text-text">{{ blogConfig.headerTitle }}</h1>
+      <p class="text-lg text-secondary" v-html="blogConfig.headerTagline"></p>
     </header>
 
     <div class="text-center mb-8">
