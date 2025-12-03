@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div :style="{ maxWidth: blogConfig.contentMaxWidth }" class="mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <header>
       <NuxtLink to="/" class="inline-block mb-6 text-primary no-underline font-medium hover:underline">&larr; Back to all posts</NuxtLink>
       <h1 v-if="post" class="font-h1 text-4xl mb-6 text-center text-text">{{ post.title }}</h1>

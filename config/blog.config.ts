@@ -53,6 +53,7 @@ export interface BlogConfig {
     pagination: PaginationConfig;
     postNavigation: PostNavigationConfig;
     postExcerpt: PostExcerptConfig;
+    contentMaxWidth: string;
     favicon: FaviconConfig;
 }
 
@@ -104,6 +105,7 @@ export const defaultBlogConfig: BlogConfig = {
         enabled: true,
         maxLength: 250,
     },
+    contentMaxWidth: '1000px',
     favicon: {
         enabled: true,
         path: '/',

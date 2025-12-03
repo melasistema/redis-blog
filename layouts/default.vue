@@ -2,7 +2,7 @@
   <div class="bg-background text-text font-sans min-h-screen">
     <slot />
     <footer class="mt-16 py-8 border-t border-secondary text-center text-secondary text-sm">
-      <div class="mx-auto px-4 sm:px-6 lg:px-8">
+      <div :style="{ maxWidth: blogConfig.contentMaxWidth }" class="mx-auto px-4 sm:px-6 lg:px-8">
         <p v-html="dynamicCopyrightNotice"></p>
       </div>
     </footer>

@@ -8,7 +8,8 @@ A modern, high-performance, and deeply customizable blog boilerplate built with 
 
 -   **🚀 Nuxt.js Frontend:** A fast and modern Vue.js framework for server-side rendering (SSR), providing excellent SEO and user experience.
 -   **⚡ Redis as Primary Database:** Utilizes Redis Stack for ultra-fast data access, leveraging RedisJSON for efficient document storage.
--   **🎨 Deeply Customizable Theming:** Configure fonts (per-heading), weights, and a full color palette from a single configuration file.
+-   **🎨 Deeply Customizable Theming:** Configure fonts, weights, a full color palette, and even the content width from a single configuration file, all powered by Tailwind CSS.
+-   **💨 Utility-First Styling:** All styling is handled by Tailwind CSS for a clean, efficient, and highly maintainable development experience.
 -   **⚙️ Feature Toggles:** Easily enable or disable features like pagination and post navigation to tailor the blog to your needs.
 -   **📄 Dynamic Pagination:** Fully configurable pagination for the post list, with control over the number of posts per page.
 -   **↔️ Post Navigation:** "Next" and "Previous" post links on single post pages to improve user engagement.
@@ -23,6 +24,7 @@ A modern, high-performance, and deeply customizable blog boilerplate built with 
 -   **Frontend & API:** [Nuxt.js 3](https://nuxt.com/)
 -   **Database:** [Redis Stack](https://redis.io/docs/stack/) (RedisJSON)
 -   **Fonts:** [@nuxtjs/google-fonts](https://google-fonts.nuxtjs.org/)
+-   **Styling:** [@nuxtjs/tailwindcss](https://tailwindcss.nuxtjs.org/)
 -   **Containerization:** [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
 -   **TypeScript Runtime:** [tsx](https://github.com/esbuild-kit/tsx)
 
@@ -98,12 +100,14 @@ The heart of the customization lies in **`config/blog.config.ts`**. This file al
 |----------------|----------------------------------------------------------|--------------------|
 | `siteName`     | The name of your blog, used in titles and headers.       | `'Melasistema'`    |
 | `contactEmail` | A contact email address.                                 | `'info@melasistema.com'` |
-| `copyrightNotice` | The copyright notice displayed in the footer.          | `'© 2025 Melasistema. All rights reserved.'` |
+| `headerTitle`  | The main title displayed on the homepage header.         | `'This is your Blog...'` |
+| `headerTagline`| The tagline displayed below the main title. Can include HTML. | `'A powerful and elegant...'` |
+| `copyrightNotice` | The copyright notice in the footer. Uses `{year}` and `{siteName}` as placeholders. | `'© {year} {siteName}...'` |
 | `copyrightUrl` | The URL the copyright notice links to.                   | `'https://github.com/melasistema'` |
 
 #### Theming (Typography & Colors)
 
-You can define your blog's entire visual identity, including fonts for each heading level and a full color palette.
+You can define your blog's entire visual identity, including fonts for each heading level and a full color palette. These values are used to dynamically generate the site's theme via Tailwind CSS.
 
 ```typescript
 // config/blog.config.ts
@@ -136,6 +140,7 @@ Easily toggle major features on or off.
 | `favicon`           | `enabled`       | If `true`, injects favicon links into the site.  | `true`  |
 | `postExcerpt`       | `enabled`       | If `true`, displays an excerpt of posts on the homepage. | `true`  |
 | `postExcerpt`       | `maxLength`     | Maximum length of the post excerpt.              | `250`   |
+| `contentMaxWidth`   | -               | Sets the max-width of the main content container. Accepts any valid CSS width (e.g., `'800px'`, `'60rem'`). | `'512px'` |
 
 #### Favicon
 

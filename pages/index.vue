@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div :style="{ maxWidth: blogConfig.contentMaxWidth }" class="mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <header class="text-center mb-8 border-b border-secondary-light pb-4">
       <h1 class="font-h1 text-4xl m-0 text-text">{{ blogConfig.headerTitle }}</h1>
       <p class="text-lg text-secondary" v-html="blogConfig.headerTagline"></p>
