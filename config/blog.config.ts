@@ -57,7 +57,7 @@ export interface BlogConfig {
 export const defaultBlogConfig: BlogConfig = {
     siteName: 'Melasistema',
     contactEmail: 'info@melasistema.com',
-    copyrightNotice: '© 2025 Melasistema. All rights reserved.',
+    copyrightNotice: '© {year} {siteName}. All rights reserved.',
     copyrightUrl: 'https://github.com/melasistema',
     useGoogleFonts: true,
     typography: {
