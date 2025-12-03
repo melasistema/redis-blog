@@ -26,7 +26,7 @@
       <div v-else-if="posts && posts.length > 0" class="grid gap-6">
         <NuxtLink v-for="post in posts" :key="post.id" :to="`/posts/${post.slug}`">
           <div class="bg-background border border-secondary-light rounded-lg p-6 transition-shadow shadow-sm hover:shadow-lg">
-            <h3 class="font-h3 text-2xl text-text mt-0">{{ post.title }}</h3>
+            <h2 class="font-h3 text-2xl text-text mt-0">{{ post.title }}</h2>
             <div class="text-sm text-secondary mb-4 flex justify-between">
               <span>By {{ post.author }}</span>
               <span>{{ new Date(post.createdAt).toISOString().split('T')[0] }}</span>
@@ -68,6 +68,14 @@ const paginationEnabled = blogConfig.pagination.enabled;
 
 const page = ref(parseInt(route.query.page) || 1);
 
+// Custom renderer to demote heading levels for SEO on the homepage
+const renderer = new marked.Renderer();
+renderer.heading = (text, level) => {
+  const newLevel = Math.min(6, level + 2); // Demote by 2 levels
+  const id = text.toLowerCase().replace(/[^\w]+/g, '-');
+  return `<h${newLevel} id="${id}">${text}</h${newLevel}>`;
+};
+
 // Fetch posts from our API endpoint with pagination
 const { data: postsData, pending: postsPending, error: postsError, refresh: refreshPosts } = await useFetch('/api/posts', {
   query: { page },
@@ -83,7 +91,7 @@ const { data: postsData, pending: postsPending, error: postsError, refresh: refr
         }
         return {
           ...post,
-          content: marked(content)
+          content: marked(content, { renderer })
         };
       });
     }

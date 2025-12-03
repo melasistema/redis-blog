@@ -66,9 +66,17 @@ const { data: result, pending, error } = await useFetch(`/api/posts/${slug}`, {
 const post = computed(() => result.value.post);
 const neighbors = computed(() => result.value.neighbors || { prev: null, next: null });
 
+// Custom renderer to demote heading levels for SEO
+const renderer = new marked.Renderer();
+renderer.heading = (text, level) => {
+  const newLevel = Math.min(6, level + 1); // Demote by 1 level
+  const id = text.toLowerCase().replace(/[^\w]+/g, '-');
+  return `<h${newLevel} id="${id}">${text}</h${newLevel}>`;
+};
+
 const renderedContent = computed(() => {
   if (post.value?.content) {
-    return marked(post.value.content);
+    return marked(post.value.content, { renderer });
   }
   return '';
 });
