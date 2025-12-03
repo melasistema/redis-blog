@@ -1,53 +1,53 @@
 <template>
-  <div class="container">
-    <header>
-      <h1>This is your Blog build with Nuxt and Redis</h1>
-      <p>A powerful and elegant blog architecture inspired by <a href="https://antirez.com/" target="_blank" rel="noopener noreferrer">Salvatore Sanfilippo</a></p>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <header class="text-center mb-8 border-b border-secondary-light pb-4">
+      <h1 class="font-h1 text-4xl m-0 text-text">This is your Blog build with Nuxt and Redis</h1>
+      <p class="text-lg text-secondary">A powerful and elegant blog architecture inspired by <a href="https://antirez.com/" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Salvatore Sanfilippo</a></p>
     </header>
 
-    <div class="controls">
-      <p v-if="postsError" class="error-message">{{ postsError.message }}</p>
+    <div class="text-center mb-8">
+      <p v-if="postsError" class="text-error mt-4">{{ postsError.message }}</p>
     </div>
 
     <main>
-      <section class="tag-cloud-section">
-        <h2>Tags</h2>
-        <div v-if="tagsPending" class="loading">Loading tags...</div>
-        <div v-else-if="uniqueTags && uniqueTags.length > 0" class="tag-cloud">
-          <span v-for="tag in uniqueTags" :key="tag" class="tag">{{ tag }}</span>
+      <section class="mb-8 border-b border-secondary-light pb-8">
+        <h2 class="font-h2 text-3xl mb-6 text-text">Tags</h2>
+        <div v-if="tagsPending" class="text-center text-secondary text-lg py-8">Loading tags...</div>
+        <div v-else-if="uniqueTags && uniqueTags.length > 0" class="flex flex-wrap gap-2 justify-center">
+          <span v-for="tag in uniqueTags" :key="tag" class="bg-secondary-light text-primary-dark py-2 px-4 rounded-full text-sm no-underline transition-colors hover:bg-primary-dark hover:text-white cursor-pointer">{{ tag }}</span>
         </div>
-        <div v-else class="no-tags">
+        <div v-else class="text-center text-secondary text-lg py-8">
           <p>No tags found.</p>
         </div>
       </section>
 
-      <h2>Recent Posts</h2>
-      <div v-if="postsPending" class="loading">Loading posts...</div>
-      <div v-else-if="posts && posts.length > 0" class="posts-grid">
-        <NuxtLink v-for="post in posts" :key="post.id" :to="`/posts/${post.slug}`" class="post-link">
-          <div class="post-card">
-            <h3>{{ post.title }}</h3>
-            <div class="post-meta">
+      <h2 class="font-h2 text-3xl mb-6 text-text">Recent Posts</h2>
+      <div v-if="postsPending" class="text-center text-secondary text-lg py-8">Loading posts...</div>
+      <div v-else-if="posts && posts.length > 0" class="grid gap-6">
+        <NuxtLink v-for="post in posts" :key="post.id" :to="`/posts/${post.slug}`">
+          <div class="bg-background border border-secondary-light rounded-lg p-6 transition-shadow shadow-sm hover:shadow-lg">
+            <h3 class="font-h3 text-2xl text-text mt-0">{{ post.title }}</h3>
+            <div class="text-sm text-secondary mb-4 flex justify-between">
               <span>By {{ post.author }}</span>
               <span>{{ new Date(post.createdAt).toISOString().split('T')[0] }}</span>
             </div>
-            <div class="post-content" v-html="post.content"></div>
-            <div class="tags">
-              <span v-for="tag in post.tags" :key="tag" class="tag">{{ tag }}</span>
+            <div class="prose max-w-none text-text leading-relaxed" v-html="post.content"></div>
+            <div class="mt-4">
+              <span v-for="tag in post.tags" :key="tag" class="inline-block bg-secondary-light text-primary py-1 px-2 rounded text-xs mr-2">{{ tag }}</span>
             </div>
           </div>
         </NuxtLink>
       </div>
-      <div v-else class="no-posts">
+      <div v-else class="text-center text-secondary text-lg py-8">
         <p>No posts yet.</p>
       </div>
 
-      <nav v-if="paginationEnabled && meta && meta.totalPages > 1" class="pagination" aria-label="Pagination">
-        <button @click="changePage(meta.page - 1)" :disabled="meta.page <= 1" class="page-link prev">
+      <nav v-if="paginationEnabled && meta && meta.totalPages > 1" class="flex justify-center items-center mt-10 gap-4" aria-label="Pagination">
+        <button @click="changePage(meta.page - 1)" :disabled="meta.page <= 1" class="bg-primary text-white py-2 px-5 text-base rounded cursor-pointer transition-colors disabled:bg-secondary-light disabled:cursor-not-allowed hover:not(:disabled):bg-primary-dark">
           &larr; Previous
         </button>
-        <span class="page-info">Page {{ meta.page }} of {{ meta.totalPages }}</span>
-        <button @click="changePage(meta.page + 1)" :disabled="meta.page >= meta.totalPages" class="page-link next">
+        <span class="text-secondary font-medium">Page {{ meta.page }} of {{ meta.totalPages }}</span>
+        <button @click="changePage(meta.page + 1)" :disabled="meta.page >= meta.totalPages" class="bg-primary text-white py-2 px-5 text-base rounded cursor-pointer transition-colors disabled:bg-secondary-light disabled:cursor-not-allowed hover:not(:disabled):bg-primary-dark">
           Next &rarr;
         </button>
       </nav>
@@ -112,163 +112,4 @@ const { data: tagsResult, pending: tagsPending } = await useFetch('/api/tags', {
 const uniqueTags = computed(() => tagsResult.value);
 </script>
 
-<style scoped>
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem;
-  color: var(--text-color);
-}
 
-header {
-  text-align: center;
-  margin-bottom: 2rem;
-  border-bottom: 1px solid var(--secondary-color-light);
-  padding-bottom: 1rem;
-}
-
-header h1 {
-  font-size: 2.5rem;
-  margin: 0;
-}
-
-.controls {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.error-message {
-  color: var(--error-color);
-  margin-top: 1rem;
-}
-
-main h2 {
-  font-size: 1.8rem;
-  margin-bottom: 1.5rem;
-}
-
-.loading, .no-posts {
-  text-align: center;
-  color: var(--secondary-color);
-  font-size: 1.1rem;
-  padding: 2rem;
-}
-
-.posts-grid {
-  display: grid;
-  gap: 1.5rem;
-}
-
-.post-card {
-  background-color: var(--background-color);
-  border: 1px solid var(--secondary-color-light);
-  border-radius: 8px;
-  padding: 1.5rem;
-  transition: box-shadow 0.2s;
-}
-
-.post-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-
-.post-card h3 {
-  margin-top: 0;
-  color: var(--text-color);
-}
-
-.post-meta {
-  font-size: 0.9rem;
-  color: var(--secondary-color);
-  margin-bottom: 1rem;
-  display: flex;
-  justify-content: space-between;
-}
-
-.post-content {
-  color: var(--text-color);
-  line-height: 1.6;
-}
-
-.tags {
-  margin-top: 1rem;
-}
-
-.tag {
-  display: inline-block;
-  background-color: var(--secondary-color-light);
-  color: var(--primary-color);
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  margin-right: 5px;
-}
-
-.tag-cloud-section {
-  margin-bottom: 2rem;
-  border-bottom: 1px solid var(--secondary-color-light);
-  padding-bottom: 2rem;
-}
-
-.tag-cloud {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-}
-
-.tag-cloud .tag {
-  background-color: var(--secondary-color-light);
-  color: var(--primary-color-dark);
-  padding: 8px 15px;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  text-decoration: none;
-  transition: background-color 0.2s, color 0.2s;
-}
-
-.tag-cloud .tag:hover {
-  background-color: var(--primary-color-dark);
-  color: white;
-  cursor: pointer;
-}
-
-.no-tags {
-  text-align: center;
-  color: var(--secondary-color);
-  font-size: 1.1rem;
-  padding: 2rem;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 2.5rem;
-  gap: 1rem;
-}
-
-.page-link {
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  font-size: 1rem;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.page-link:disabled {
-  background-color: var(--secondary-color-light);
-  cursor: not-allowed;
-}
-
-.page-link:hover:not(:disabled) {
-  background-color: var(--primary-color-dark);
-}
-
-.page-info {
-  color: var(--secondary-color);
-  font-weight: 500;
-}
-</style>

@@ -1,46 +1,46 @@
 <template>
-  <div class="container">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <header>
-      <NuxtLink to="/" class="back-link">&larr; Back to all posts</NuxtLink>
-      <h1 v-if="post">{{ post.title }}</h1>
-      <h1 v-else>Loading Post...</h1>
+      <NuxtLink to="/" class="inline-block mb-6 text-primary no-underline font-medium hover:underline">&larr; Back to all posts</NuxtLink>
+      <h1 v-if="post" class="font-h1 text-4xl mb-6 text-center text-text">{{ post.title }}</h1>
+      <h1 v-else class="font-h1 text-4xl mb-6 text-center text-text">Loading Post...</h1>
     </header>
 
-    <main>
-      <div v-if="pending" class="loading">Loading post details...</div>
-      <div v-else-if="error" class="error-message">
+    <main class="pt-4">
+      <div v-if="pending" class="text-center text-lg py-8 rounded-lg">Loading post details...</div>
+      <div v-else-if="error" class="text-center text-lg py-8 rounded-lg text-error bg-error-light border border-error">
         <p>Error loading post: {{ error.message }}</p>
         <p>This might happen if the post does not exist or there's a server issue.</p>
       </div>
-      <div v-else-if="post" class="post-content-wrapper">
-        <div class="post-meta">
+      <div v-else-if="post" class="bg-background border border-secondary-light rounded-lg p-8 shadow-sm">
+        <div class="text-sm text-secondary mb-6 flex justify-between border-b border-secondary-light pb-3">
           <span>By {{ post.author }}</span>
           <span>Published on {{ new Date(post.createdAt).toLocaleDateString() }}</span>
         </div>
-        <div class="post-content" v-html="renderedContent"></div>
-        <div class="tags">
-          <span v-for="tag in post.tags" :key="tag" class="tag">{{ tag }}</span>
+        <div class="prose max-w-none" v-html="renderedContent"></div>
+        <div class="mt-8 pt-4 border-t border-secondary-light">
+          <span v-for="tag in post.tags" :key="tag" class="inline-block bg-secondary-light text-primary py-1.5 px-3 rounded-full text-sm mr-2 mb-2 no-underline">{{ tag }}</span>
         </div>
       </div>
-      <div v-else class="no-post">
+      <div v-else class="text-center text-lg py-8 rounded-lg">
         <p>Post not found.</p>
         <NuxtLink to="/">Go back home</NuxtLink>
       </div>
 
-      <nav v-if="post && blogConfig.postNavigation.enabled && (neighbors.prev || neighbors.next)" class="post-navigation">
-        <NuxtLink v-if="neighbors.prev" :to="`/posts/${neighbors.prev.slug}`" class="nav-link prev">
-          <span class="arrow">&larr;</span>
-          <span class="text">
-            <span class="label">Previous Post</span>
-            <span class="title">{{ neighbors.prev.title }}</span>
+      <nav v-if="post && blogConfig.postNavigation.enabled && (neighbors.prev || neighbors.next)" class="flex justify-between mt-12 pt-8 border-t border-secondary-light">
+        <NuxtLink v-if="neighbors.prev" :to="`/posts/${neighbors.prev.slug}`" class="flex items-center gap-4 no-underline text-text p-4 rounded-lg max-w-[50%] border border-transparent transition-colors hover:bg-secondary-light hover:border-secondary">
+          <span class="text-2xl text-primary">&larr;</span>
+          <span class="flex flex-col">
+            <span class="text-sm text-secondary mb-1">Previous Post</span>
+            <span class="font-medium whitespace-nowrap overflow-hidden text-ellipsis">{{ neighbors.prev.title }}</span>
           </span>
         </NuxtLink>
-        <NuxtLink v-if="neighbors.next" :to="`/posts/${neighbors.next.slug}`" class="nav-link next">
-          <span class="text">
-            <span class="label">Next Post</span>
-            <span class="title">{{ neighbors.next.title }}</span>
+        <NuxtLink v-if="neighbors.next" :to="`/posts/${neighbors.next.slug}`" class="flex items-center gap-4 no-underline text-text p-4 rounded-lg max-w-[50%] border border-transparent transition-colors hover:bg-secondary-light hover:border-secondary text-right justify-end">
+          <span class="flex flex-col">
+            <span class="text-sm text-secondary mb-1">Next Post</span>
+            <span class="font-medium whitespace-nowrap overflow-hidden text-ellipsis">{{ neighbors.next.title }}</span>
           </span>
-          <span class="arrow">&rarr;</span>
+          <span class="text-2xl text-primary">&rarr;</span>
         </NuxtLink>
       </nav>
     </main>
@@ -73,154 +73,3 @@ const renderedContent = computed(() => {
   return '';
 });
 </script>
-
-<style scoped>
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem;
-  color: var(--text-color);
-}
-
-.back-link {
-  display: inline-block;
-  margin-bottom: 1.5rem;
-  color: var(--primary-color);
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.back-link:hover {
-  text-decoration: underline;
-}
-
-header h1 {
-  font-size: 2.8rem;
-  margin-bottom: 1.5rem;
-  color: var(--text-color);
-  text-align: center;
-}
-
-main {
-  padding-top: 1rem;
-}
-
-.loading, .error-message, .no-post {
-  text-align: center;
-  font-size: 1.1rem;
-  padding: 2rem;
-  border-radius: 8px;
-}
-
-.error-message {
-  color: var(--error-color);
-  background-color: var(--error-color-light);
-  border: 1px solid var(--error-color);
-}
-
-.post-content-wrapper {
-  background-color: var(--background-color);
-  border: 1px solid var(--secondary-color-light);
-  border-radius: 8px;
-  padding: 2rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-.post-meta {
-  font-size: 0.9rem;
-  color: var(--secondary-color);
-  margin-bottom: 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--secondary-color-light);
-  padding-bottom: 0.8rem;
-}
-
-.post-content {
-  line-height: 1.8;
-  font-size: 1.1rem;
-  color: var(--text-color);
-}
-
-.post-content h2, .post-content h3, .post-content h4, .post-content h5, .post-content h6 {
-  margin-top: 1.5rem;
-  margin-bottom: 0.8rem;
-  color: var(--text-color);
-}
-
-.post-content p {
-  margin-bottom: 1rem;
-}
-
-.tags {
-  margin-top: 2rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--secondary-color-light);
-}
-
-.tag {
-  display: inline-block;
-  background-color: var(--secondary-color-light);
-  color: var(--primary-color);
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  margin-right: 8px;
-  margin-bottom: 8px;
-  text-decoration: none;
-}
-
-.post-navigation {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 3rem;
-  padding-top: 2rem;
-  border-top: 1px solid var(--secondary-color-light);
-}
-
-.nav-link {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  text-decoration: none;
-  color: var(--text-color);
-  padding: 1rem;
-  border-radius: 8px;
-  max-width: 50%;
-  border: 1px solid transparent;
-  transition: background-color 0.2s, border-color 0.2s;
-}
-
-.nav-link:hover {
-  background-color: var(--secondary-color-light);
-  border-color: var(--secondary-color);
-}
-
-.nav-link.next {
-  text-align: right;
-  justify-content: flex-end;
-}
-
-.nav-link .text {
-  display: flex;
-  flex-direction: column;
-}
-
-.nav-link .label {
-  font-size: 0.9rem;
-  color: var(--secondary-color);
-  margin-bottom: 0.25rem;
-}
-
-.nav-link .title {
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.nav-link .arrow {
-  font-size: 1.5rem;
-  color: var(--primary-color);
-}
-</style>
