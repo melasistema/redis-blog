@@ -1,41 +1,25 @@
-# Redis Nuxt Blog
+# 🚀 Redis Nuxt Blog
 
-A modern, high-performance blog boilerplate built with Nuxt.js 3, Redis Stack, and Docker. This project demonstrates how to leverage Redis as a primary, ultra-fast database for a content-driven application, showcasing its speed and powerful data structures within a robust Nuxt.js environment.
+A modern, high-performance, and deeply customizable blog boilerplate built with Nuxt.js 3, Redis Stack, and Docker. This project is designed to be a powerful starting point for developers who want a fast, scalable, and feature-rich blog that can be fully customized in minutes from a single configuration file.
 
-## Table of Contents
-- [Overview](#overview)
-- [Features](#features)
-- [Tech Stack](#-tech-stack)
-- [Getting Started](#-getting-started)
-  - [Prerequisites](#prerequisites)
-  - [1. Clone the Repository](#1-clone-the-repository)
-  - [2. Install Dependencies](#2-install-dependencies)
-  - [3. Configuration](#3-configuration)
-  - [4. Running with Docker Compose (Recommended)](#4-running-with-docker-compose-recommended)
-  - [5. Running Locally (Development)](#5-running-locally-development)
-  - [6. Seed the Database](#6-seed-the-database)
-- [API Endpoints](#api-endpoints)
-- [Troubleshooting](#troubleshooting)
-- [Credits](#-credits)
-- [Special Thanks](#-special-thanks)
-- [License](#-license)
-
-## Overview
-This project provides a comprehensive boilerplate for a blog application, integrating Nuxt.js 3 for a modern frontend and API layer with Redis Stack (including RedisJSON for structured data and RediSearch for powerful search capabilities) as the backend data store. It's designed for developers looking for a high-performance, scalable, and easily deployable blog solution using Docker.
-
-## ✨Features
+## ✨ Features
 
 -   **🚀 Nuxt.js Frontend:** A fast and modern Vue.js framework for server-side rendering (SSR), providing excellent SEO and user experience.
--   **⚡ Redis as Primary Database:** Utilizes Redis Stack for ultra-fast data access, leveraging RedisJSON for efficient document storage and RediSearch for advanced querying.
+-   **⚡ Redis as Primary Database:** Utilizes Redis Stack for ultra-fast data access, leveraging RedisJSON for efficient document storage.
+-   **🎨 Deeply Customizable Theming:** Configure fonts (per-heading), weights, and a full color palette from a single configuration file.
+-   **⚙️ Feature Toggles:** Easily enable or disable features like pagination and post navigation to tailor the blog to your needs.
+-   **📄 Dynamic Pagination:** Fully configurable pagination for the post list, with control over the number of posts per page.
+-   **↔️ Post Navigation:** "Next" and "Previous" post links on single post pages to improve user engagement.
+-   **🌐 Modern Favicon Support:** Comprehensive favicon setup for all modern devices, including a web app manifest.
 -   **📦 Dockerized Environment:** Fully containerized with `docker-compose` for easy setup, consistent development, and reliable production deployments.
--   **📈 Sorted Sets for Timelines:** Efficiently retrieves posts in chronological order, ensuring optimal performance for blog feeds.
--   **📜 Seeding Script:** Includes a convenient script to populate the database with sample posts, accelerating initial setup and testing.
--   **🔒 Data Persistence:** Configured with Docker named volumes to ensure your valuable data persists across container restarts and updates.
+-   **📈 Sorted Sets for Timelines:** Efficiently retrieves posts in chronological order using Redis Sorted Sets.
+-   **📜 Seeding Script & CLI:** Includes scripts to populate the database with sample posts and a CLI to create, list, and delete posts.
 
 ## 🛠️ Tech Stack
 
 -   **Frontend & API:** [Nuxt.js 3](https://nuxt.com/)
--   **Database:** [Redis Stack](https://redis.io/docs/stack/) (RedisJSON, RediSearch)
+-   **Database:** [Redis Stack](https://redis.io/docs/stack/) (RedisJSON)
+-   **Fonts:** [@nuxtjs/google-fonts](https://google-fonts.nuxtjs.org/)
 -   **Containerization:** [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
 -   **TypeScript Runtime:** [tsx](https://github.com/esbuild-kit/tsx)
 
@@ -57,66 +41,13 @@ cd 'redis-blog'
 
 ### 2. Install Dependencies
 
-Install the project's Node.js dependencies:
-
 ```bash
 npm install
 ```
 
-### 3. Configuration
+### 3. Running the Blog
 
-The application uses environment variables for configuration. You can use the provided `.env.example` and `.env.secret.example` files as templates.
-
-*   **For Development:** Copy `.env.example` to a new file named `.env` for local development. This file contains the necessary variables for running the application locally.
-    ```bash
-    cp .env.example .env
-    ```
-    The default values in this file are configured to work with the Dockerized Redis instance, mapping the Redis port to `6380` on your `localhost`.
-
-*   **For Production:** The `.env.secret.example` file outlines sensitive variables. Create a `.env.secret` file for your production environment and ensure it is handled securely and not committed to version control.
-
-#### Environment Variables
-
-The project uses two types of environment variables:
-
-*   **Runtime Configuration:** These are exposed to the Nuxt application via the `runtimeConfig` and should be prefixed with `NUXT_PUBLIC_`.
-*   **Script Variables:** These are used by external scripts like `seed-redis.ts`.
-
-**Runtime Configuration (`.env` file)**
-
-| Variable Name             | Description                                                                  | Docker Compose Value (Example)     | Local `.env` Value (Example)      |
-|---------------------------|------------------------------------------------------------------------------|------------------------------------|-----------------------------------|
-| `NUXT_URL`                | Base URL for the Nuxt application. Essential for internal requests and link generation. | `http://0.0.0.0:3000`            | `http://localhost:3000`         |
-| `NUXT_PUBLIC_REDIS_HOST`  | Redis hostname for connections, exposed via public runtime config.           | `redis`                            | `localhost`                       |
-| `NUXT_PUBLIC_REDIS_PORT`  | Redis port for connections, exposed via public runtime config.               | `6379`                             | `6380`                            |
-
-**Script & Other Variables (`.env` file)**
-
-| Variable Name             | Description                                                                  | Default Value      |
-|---------------------------|------------------------------------------------------------------------------|--------------------|
-| `NUXT_REDIS_URL`          | Direct Redis connection URL. Used by `seed-redis.ts` and `new-post.ts`.      | `redis://localhost:6380` |
-| `DEFAULT_AUTHOR`          | The default author name to use when creating new posts via the CLI.         | `CLI User`         |
-
-**Secret Variables (`.env.secret` file)**
-
-| Variable Name             | Description                                                                  |
-|---------------------------|------------------------------------------------------------------------------|
-| `REDIS_PASSWORD`          | The password for your Redis instance.                                        |
-
-### Blog Configuration
-
-The blog's core settings are defined in `config/blog.config.ts`. You can modify this file to customize your blog's identity and appearance.
-
-| Property           | Description                                                                 | Default Value                         |
-|--------------------|-----------------------------------------------------------------------------|---------------------------------------|
-| `siteName`         | The name of your blog, displayed in the header and page titles.             | `Redis Nuxt Blog`                     |
-| `contactEmail`     | A contact email address, which can be used in your templates (e.g., footer). | `info@melasistema.com`                |
-| `useGoogleFonts`   | A boolean to enable or disable Google Fonts for the blog.                   | `true`                                |
-| `googleFontToUse`  | Specifies the Google Font family and weights to use (e.g., `Open Sans:wght@400;700&display=swap`). Only active if `useGoogleFonts` is `true`. | `Open Sans:wght@400;700&display=swap` |
-
-### 4. Running with Docker Compose (Recommended)
-
-This command will build the Docker images and start both the Nuxt.js application and Redis Stack containers.
+The recommended way to run the project is with Docker Compose, which manages both the Nuxt application and the Redis database.
 
 ```bash
 docker compose up -d --build
@@ -124,89 +55,111 @@ docker compose up -d --build
 
 Once started, access the application at: [http://localhost:3000](http://localhost:3000)
 
-### 5. Running Locally (Development)
+### 4. Seed the Database
 
-To run the Nuxt.js application in development mode on your host machine while still using the Dockerized Redis:
-
-1.  **Start only the Redis Stack service:**
-    ```bash
-    docker compose up redis -d
-    ```
-2.  **Start the Nuxt development server:**
-    ```bash
-    npm run dev
-    ```
-    Access the application at: [http://localhost:3000](http://localhost:3000)
-
-### 6. Seed the Database
-
-After starting either with Docker Compose or locally (and Redis is running), populate the Redis database with sample blog posts:
+After the application is running, populate the Redis database with sample blog posts:
 
 ```bash
 npm run seed
 ```
 
-## How To
+---
 
-### Create a New Post
+## ⚙️ Configuration
 
-You can create a new blog post using an interactive command-line interface.
+This blog is designed to be extensively customized through environment variables and a central configuration file.
 
-```bash
-npm run new-post
-```
+### Environment Variables
 
-The script will prompt you for the following information:
--   **Title:** The title of your blog post.
--   **Content:** The full HTML content of your post.
--   **Tags:** A comma-separated list of tags (e.g., "nuxt,redis,tutorial").
--   **Author:** The author of the post. You can press Enter to use the default author specified in your `.env` file.
-
-### List All Posts
-
-To see a list of all post titles, run:
+Copy the `.env.example` file to `.env` for local development. These variables are essential for connecting to Redis and setting up the application's base URL.
 
 ```bash
-npm run post:list
+cp .env.example .env
 ```
 
-### Delete a Post
+| Variable Name             | Description                                                                  | Default Value (for local dev)      |
+|---------------------------|------------------------------------------------------------------------------|-----------------------------------|
+| `NUXT_URL`                | Base URL for the Nuxt application. Essential for internal requests.          | `http://localhost:3000`         |
+| `NUXT_PUBLIC_REDIS_HOST`  | Redis hostname exposed to the Nuxt app.                                      | `localhost`                       |
+| `NUXT_PUBLIC_REDIS_PORT`  | Redis port exposed to the Nuxt app.                                          | `6380`                            |
+| `NUXT_REDIS_URL`          | Direct Redis connection URL for server-side scripts.                         | `redis://localhost:6380` |
+| `DEFAULT_AUTHOR`          | The default author name for new posts created via the CLI.                   | `CLI User`         |
 
-To delete a blog post, run the interactive command:
+### Central Blog Configuration
 
-```bash
-npm run post:delete
+The heart of the customization lies in **`config/blog.config.ts`**. This file allows you to control the entire look, feel, and behavior of your blog.
+
+#### General
+
+| Property       | Description                                              | Default Value      |
+|----------------|----------------------------------------------------------|--------------------|
+| `siteName`     | The name of your blog, used in titles and headers.       | `'Melasistema'`    |
+| `contactEmail` | A contact email address.                                 | `'info@melasistema.com'` |
+| `copyrightNotice` | The copyright notice displayed in the footer.          | `'© 2025 Melasistema. All rights reserved.'` |
+| `copyrightUrl` | The URL the copyright notice links to.                   | `'https://github.com/melasistema'` |
+
+#### Theming (Typography & Colors)
+
+You can define your blog's entire visual identity, including fonts for each heading level and a full color palette.
+
+```typescript
+// config/blog.config.ts
+export const defaultBlogConfig = {
+  // ...
+  typography: {
+    body: { fontFamily: 'Englebert', weights: '100..900', italic: true },
+    h1: { fontFamily: 'Englebert', weights: '700' },
+    h2: { fontFamily: 'Englebert', weights: '600' },
+    // ... and so on
+  },
+  colors: {
+    primary: '#007bff',
+    secondary: '#6c757d',
+    text: '#212529',
+    background: '#ffffff',
+  },
+};
 ```
 
-This will display a list of all posts. Enter the number of the post you wish to delete and confirm your choice.
+#### Features
 
-### API Endpoints
-The application exposes the following API endpoints:
+Easily toggle major features on or off.
 
-| Endpoint                  | Method | Description                                       |
-|---------------------------|--------|---------------------------------------------------|
-| `/api/posts`              | `GET`  | Retrieves a list of recent blog posts.            |
-| `/api/posts/:slug`        | `GET`  | Retrieves a single blog post by its unique slug.  |
-| `/api/tags`               | `GET`  | Retrieves a list of all unique tags.              |
-| `/api/posts/:slug/toggle-published` | `PUT` | Toggles the published status of a post. (Not yet implemented in UI) |
+| Section             | Property        | Description                                      | Default |
+|---------------------|-----------------|--------------------------------------------------|---------|
+| `pagination`        | `enabled`       | If `true`, enables pagination on the homepage.   | `true`  |
+| `pagination`        | `postsPerPage`  | Number of posts to show on each page.            | `2`     |
+| `postNavigation`    | `enabled`       | If `true`, shows "Next/Previous" post links.     | `true`  |
+| `favicon`           | `enabled`       | If `true`, injects favicon links into the site.  | `true`  |
 
-### Troubleshooting
+#### Favicon
 
--   **`ECONNREFUSED` errors:** If you encounter connection refused errors (e.g., for Redis or internal API calls), ensure both your Nuxt application and Redis services are running. Verify your environment variables (`NUXT_URL`, `NUXT_PUBLIC_REDIS_HOST`, `NUXT_PUBLIC_REDIS_PORT`) are correctly configured for your specific environment (Docker Compose vs. Local Development).
--   **No posts or tags displayed:** Run `npm run seed` to populate the Redis database.
--   **`[Vue Router warn]: No match found for location with path "/_nuxt/"`**: This warning is generally benign in a production build. It indicates an attempt to navigate to a static asset path and typically doesn't affect the core functionality of the application.
+To use your own favicon:
+1.  Add your favicon files to the `/public` directory.
+2.  The boilerplate is set up to find `favicon.svg`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, and `manifest.webmanifest`.
+3.  Simply replace the placeholder files with your own assets.
 
-### 🌟 Credits
+## 🛠️ How To (CLI)
 
-This project is made possible by the inspiration, contributions, and tools of an incredible community.
+Manage your blog's content directly from the command line.
 
--   **👨‍💻 Author**: [Luca Visciola](https://github.com/melasistema) – Passionate drummer and developer. Reach out at [info@melasistema.com](mailto:info@melasistema.com) for inquiries or feedback.
--   **🚀 Inspired by Salvatore Sanfilippo**: The foundation of this project stems from the unreachable talent of [Salvatore Sanfilippo](https://antirez.com), the creator of [Redis](https://github.com/redis/redis).
+-   **Create a new post:** `npm run new-post`
+-   **List all posts:** `npm run post:list`
+-   **Delete a post:** `npm run post:delete`
 
-### 🙌 [Special Thanks](#special-thanks)
+## 🔌 API Endpoints
 
-To the open-source community and all contributors—your dedication and collaboration inspire innovation and make projects like this possible. 🌟
+| Endpoint           | Method | Description                                                                   |
+|--------------------|--------|-------------------------------------------------------------------------------|
+| `/api/posts`       | `GET`  | Retrieves a list of posts. Supports `?page=N` for pagination.                 |
+| `/api/posts/:slug` | `GET`  | Retrieves a single post and its next/previous neighbors.                      |
+| `/api/tags`        | `GET`  | Retrieves a list of all unique tags.                                          |
+
+## 🌟 Credits
+
+-   **👨‍💻 Author**: [Luca Visciola](https://github.com/melasistema) – Passionate drummer and developer. Reach out at [info@melasistema.com](mailto:info@melasistema.com).
+-   **🚀 Inspired by [Salvatore Sanfilippo](https://github.com/antirez)**: The creator of [Redis](https://github.com/redis/redis), whose work is a constant source of inspiration.
 
 ## 📝 License
 
-This project is licensed under the MIT License. See the [LICENSE](./LICENSE.md) file for details.
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
