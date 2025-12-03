@@ -58,6 +58,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { marked } from 'marked';
 
 const route = useRoute();
 const router = useRouter();
@@ -71,7 +72,23 @@ const page = ref(parseInt(route.query.page) || 1);
 const { data: postsData, pending: postsPending, error: postsError, refresh: refreshPosts } = await useFetch('/api/posts', {
   query: { page },
   watch: [page],
-  transform: (res) => res || { posts: [], meta: {} },
+  transform: (res) => {
+    if (res && res.posts) {
+      res.posts = res.posts.map(post => {
+        let content = post.content || '';
+        if (blogConfig.postExcerpt?.enabled && content.length > blogConfig.postExcerpt.maxLength) {
+          content = content.substring(0, blogConfig.postExcerpt.maxLength);
+          content = content.substring(0, Math.min(content.length, content.lastIndexOf(' ')));
+          content += '...';
+        }
+        return {
+          ...post,
+          content: marked(content)
+        };
+      });
+    }
+    return res || { posts: [], meta: {} };
+  },
   default: () => ({ posts: [], meta: {} })
 });
 

@@ -30,6 +30,11 @@ export interface PostNavigationConfig {
     enabled: boolean;
 }
 
+export interface PostExcerptConfig {
+    enabled: boolean;
+    maxLength: number;
+}
+
 export interface FaviconConfig {
     enabled: boolean;
     path: string; // Path within the public directory
@@ -45,6 +50,7 @@ export interface BlogConfig {
     colors: ColorConfig;
     pagination: PaginationConfig;
     postNavigation: PostNavigationConfig;
+    postExcerpt: PostExcerptConfig;
     favicon: FaviconConfig;
 }
 
@@ -89,6 +95,10 @@ export const defaultBlogConfig: BlogConfig = {
     },
     postNavigation: {
         enabled: true,
+    },
+    postExcerpt: {
+        enabled: true,
+        maxLength: 250,
     },
     favicon: {
         enabled: true,

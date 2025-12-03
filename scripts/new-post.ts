@@ -22,6 +22,21 @@ const rl = readline.createInterface({
 
 const question = (query: string) => new Promise<string>((resolve) => rl.question(query, resolve));
 
+const getMultiLineInput = (prompt: string, terminator: string): Promise<string> => {
+    return new Promise((resolve) => {
+        const lines: string[] = [];
+        console.log(`${prompt} (type '${terminator}' on a new line to finish)`);
+        rl.on('line', (line) => {
+            if (line.trim() === terminator) {
+                rl.removeAllListeners('line');
+                resolve(lines.join('\n'));
+            } else {
+                lines.push(line);
+            }
+        });
+    });
+};
+
 async function createPost() {
     const redisUrl = process.env.NUXT_REDIS_URL || 'redis://localhost:6380';
     const redis = createClient({ url: redisUrl });
@@ -33,7 +48,7 @@ async function createPost() {
         console.log('Connected to Redis');
 
         const title = await question('Title: ');
-        const content = await question('Content: ');
+        const content = await getMultiLineInput('Content:', '(end)');
         const tagsStr = await question('Tags (comma-separated): ');
         const defaultAuthor = process.env.DEFAULT_AUTHOR || 'CLI User';
         const author = await question(`Author (${defaultAuthor}): `) || defaultAuthor;

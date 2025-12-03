@@ -17,7 +17,7 @@
           <span>By {{ post.author }}</span>
           <span>Published on {{ new Date(post.createdAt).toLocaleDateString() }}</span>
         </div>
-        <div class="post-content" v-html="post.content"></div>
+        <div class="post-content" v-html="renderedContent"></div>
         <div class="tags">
           <span v-for="tag in post.tags" :key="tag" class="tag">{{ tag }}</span>
         </div>
@@ -50,6 +50,7 @@
 <script setup>
 import { useRoute } from 'vue-router';
 import { computed } from 'vue';
+import { marked } from 'marked';
 
 const route = useRoute();
 const slug = route.params.slug;
@@ -64,6 +65,13 @@ const { data: result, pending, error } = await useFetch(`/api/posts/${slug}`, {
 
 const post = computed(() => result.value.post);
 const neighbors = computed(() => result.value.neighbors || { prev: null, next: null });
+
+const renderedContent = computed(() => {
+  if (post.value?.content) {
+    return marked(post.value.content);
+  }
+  return '';
+});
 </script>
 
 <style scoped>

@@ -15,6 +15,7 @@ A modern, high-performance, and deeply customizable blog boilerplate built with 
 -   **🌐 Modern Favicon Support:** Comprehensive favicon setup for all modern devices, including a web app manifest.
 -   **📦 Dockerized Environment:** Fully containerized with `docker-compose` for easy setup, consistent development, and reliable production deployments.
 -   **📈 Sorted Sets for Timelines:** Efficiently retrieves posts in chronological order using Redis Sorted Sets.
+-   **📝 Markdown Support:** Write post content using Markdown for rich text formatting, including headings, lists, and code blocks.
 -   **📜 Seeding Script & CLI:** Includes scripts to populate the database with sample posts and a CLI to create, list, and delete posts.
 
 ## 🛠️ Tech Stack
@@ -133,6 +134,8 @@ Easily toggle major features on or off.
 | `pagination`        | `postsPerPage`  | Number of posts to show on each page.            | `2`     |
 | `postNavigation`    | `enabled`       | If `true`, shows "Next/Previous" post links.     | `true`  |
 | `favicon`           | `enabled`       | If `true`, injects favicon links into the site.  | `true`  |
+| `postExcerpt`       | `enabled`       | If `true`, displays an excerpt of posts on the homepage. | `true`  |
+| `postExcerpt`       | `maxLength`     | Maximum length of the post excerpt.              | `250`   |
 
 #### Favicon
 
@@ -145,7 +148,7 @@ To use your own favicon:
 
 Manage your blog's content directly from the command line.
 
--   **Create a new post:** `npm run new-post`
+-   **Create a new post:** `npm run new-post` (Supports multi-line Markdown input; type `(end)` on a new line to finish.)
 -   **List all posts:** `npm run post:list`
 -   **Delete a post:** `npm run post:delete`
 
