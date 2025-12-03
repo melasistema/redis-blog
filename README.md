@@ -2,6 +2,8 @@
 
 A modern, high-performance, and deeply customizable blog boilerplate built with Nuxt.js 3, Redis Stack, and Docker. This project is designed to be a powerful starting point for developers who want a fast, scalable, and feature-rich blog that can be fully customized in minutes from a single configuration file.
 
+![Redis Blog](resources/images/redis-blog-poster-wide-image.jpg)
+
 ## ✨ Features
 
 -   **🚀 Nuxt.js Frontend:** A fast and modern Vue.js framework for server-side rendering (SSR), providing excellent SEO and user experience.
@@ -159,6 +161,10 @@ Manage your blog's content directly from the command line.
 
 -   **👨‍💻 Author**: [Luca Visciola](https://github.com/melasistema) – Passionate drummer and developer. Reach out at [info@melasistema.com](mailto:info@melasistema.com).
 -   **🚀 Inspired by [Salvatore Sanfilippo](https://github.com/antirez)**: The creator of [Redis](https://github.com/redis/redis), whose work is a constant source of inspiration.
+
+The Ultimate Tech Stack | Hyperdrive Performance
+--- | ---
+![Redis Blog](resources/images/redis-blog-the-ultimate-tech-stack.jpg) |  ![Redis Blog](resources/images/redis-blog-hyperdrive-performance.jpg)
 
 ## 📝 License
 
