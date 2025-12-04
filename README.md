@@ -22,7 +22,7 @@ A modern, high-performance, and deeply customizable blog boilerplate built with 
 ## 🛠️ Tech Stack
 
 -   **Frontend & API:** [Nuxt.js 3](https://nuxt.com/)
--   **Database:** [Redis Stack](https://redis.io/docs/stack/) (RedisJSON)
+-   **Database:** [Redis Stack](https://redis.io/docs/latest/) (RedisJSON)
 -   **Fonts:** [@nuxtjs/google-fonts](https://google-fonts.nuxtjs.org/)
 -   **Styling:** [@nuxtjs/tailwindcss](https://tailwindcss.nuxtjs.org/)
 -   **Containerization:** [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
