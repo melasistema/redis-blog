@@ -151,11 +151,23 @@ To use your own favicon:
 
 ## 🛠️ How To (CLI)
 
-Manage your blog's content directly from the command line.
+Manage your blog's content directly from the command line using the interactive CLI menu.
 
--   **Create a new post:** `npm run post:new` (Supports multi-line Markdown input; type `(end)` on a new line to finish.)
--   **List all posts:** `npm run post:list`
--   **Delete a post:** `npm run post:delete`
+To launch the CLI, run:
+```bash
+npm run cli
+```
+
+This will present you with a main menu to choose from the following actions:
+
+*   **Create new post**: Add a new blog post. You will be prompted for a title, multi-line content (type `(end)` on a new line to finish), tags, and author.
+*   **List all posts**: Display a comprehensive list of all posts currently stored in Redis.
+*   **Delete a post**: Interactively select and remove an existing blog post. It will first show a full list of posts, then allow you to choose one to delete.
+*   **Edit a post**: (Coming soon) Modify the details of an existing blog post.
+*   **Search posts**: (Coming soon) Find specific blog posts based on criteria.
+*   **Exit**: Close the CLI.
+
+Follow the on-screen prompts to perform your desired action.
 
 ## 🔌 API Endpoints
 
