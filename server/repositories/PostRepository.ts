@@ -8,111 +8,108 @@
 
 import { getRedis } from '~/server/utils/redis';
 
-// Define the name of the RediSearch index for posts.
+// --- RediSearch index name ---
 const POST_SEARCH_INDEX = 'idx:posts';
 
+// --- Types ---
+export type Post = {
+    slug: string;
+    title: string;
+    content: string;
+    author?: string;
+    tags?: string[];
+    [key: string]: any;
+};
+
+export type NeighborPost = { slug: string; title: string } | null;
+
+// --- RediSearch schema ---
+const schema = {
+    '$.title': { type: 'TEXT', AS: 'title', WEIGHT: 10 },
+    '$.content': { type: 'TEXT', AS: 'content' },
+    '$.tags': { type: 'TAG', AS: 'tags' },
+    '$.author': { type: 'TEXT', AS: 'author' },
+};
+
+// --- RediSearch create options ---
+const options = {
+    ON: 'JSON',
+    PREFIX: 'post:',
+    STOPWORDS: [],
+};
+
+// --- Repository ---
 export const PostRepository = {
-  // getLatest retrieves the most recent posts.
-  // It now uses JSON.MGET for efficient bulk fetching instead of a loop.
-  async getLatest(limit = 20) {
-    const redis = await getRedis();
-    const keys = await redis.zRange('posts:by_date', 0, limit - 1, { REV: true });
-    if (keys.length === 0) return [];
-    
-    // Using JSON.MGET is significantly more performant than looping through keys.
-    const results = await redis.json.mGet(keys, '$');
-    // Explicitly map and unwrap the nested array structure from mGet.
-    return results.map(result => result?.[0]).filter(Boolean);
-  },
+    async getLatest(limit = 20): Promise<Post[]> {
+        const redis = await getRedis();
+        const keys = await redis.zRange('posts:by_date', 0, limit - 1, { REV: true });
+        if (!keys.length) return [];
+        const results = await redis.json.mGet(keys, '$') as (Post[] | null)[];
+        return results.map(r => r?.[0]).filter(Boolean) as Post[];
+    },
 
-  // getPaginated retrieves a specific page of posts.
-  // This has also been updated to use the more efficient JSON.MGET.
-  async getPaginated(offset: number, limit: number) {
-    const redis = await getRedis();
-    const keys = await redis.zRange('posts:by_date', offset, offset + limit - 1, { REV: true });
-    if (keys.length === 0) return [];
-    
-    const results = await redis.json.mGet(keys, '$');
-    // Explicitly map and unwrap the nested array structure from mGet.
-    return results.map(result => result?.[0]).filter(Boolean);
-  },
+    async getPaginated(offset: number, limit: number): Promise<Post[]> {
+        const redis = await getRedis();
+        const keys = await redis.zRange('posts:by_date', offset, offset + limit - 1, { REV: true });
+        if (!keys.length) return [];
+        const results = await redis.json.mGet(keys, '$') as (Post[] | null)[];
+        return results.map(r => r?.[0]).filter(Boolean) as Post[];
+    },
 
-  async getTotalCount() {
-    const redis = await getRedis();
-    return redis.zCard('posts:by_date');
-  },
+    async getTotalCount(): Promise<number> {
+        const redis = await getRedis();
+        return redis.zCard('posts:by_date');
+    },
 
-  async getBySlug(slug: string) {
-    const redis = await getRedis();
-    const key = await redis.hGet('slugs', slug);
-    if (!key) return null;
-    return redis.json.get(key);
-  },
+    async getBySlug(slug: string): Promise<Post | null> {
+        const redis = await getRedis();
+        const key = await redis.hGet('slugs', slug);
+        if (!key) return null;
+        return redis.json.get(key) as Promise<Post | null>;
+    },
 
-  async getNeighbors(slug: string) {
-    const redis = await getRedis();
-    const postKey = await redis.hGet('slugs', slug);
-    if (!postKey) return { prev: null, next: null };
+    async getNeighbors(slug: string): Promise<{ prev: NeighborPost; next: NeighborPost }> {
+        const redis = await getRedis();
+        const key = await redis.hGet('slugs', slug);
+        if (!key) return { prev: null, next: null };
 
-    const rank = await redis.zRevRank('posts:by_date', postKey);
-    if (rank === null) return { prev: null, next: null };
+        const rank = await redis.zRevRank('posts:by_date', key);
+        if (rank === null) return { prev: null, next: null };
 
-    const [prevKey] = await redis.zRange('posts:by_date', rank + 1, rank + 1, { REV: true });
-    const [nextKey] = await redis.zRange('posts:by_date', rank - 1, rank - 1, { REV: true });
+        const [prevKey] = await redis.zRange('posts:by_date', rank + 1, rank + 1, { REV: true });
+        const [nextKey] = await redis.zRange('posts:by_date', rank - 1, rank - 1, { REV: true });
 
-    const fetchNeighbor = async (key) => {
-      if (!key) return null;
-      const post = await redis.json.get(key);
-      return post ? { slug: post.slug, title: post.title } : null;
-    };
+        const fetchNeighbor = async (k: string | undefined): Promise<NeighborPost> => {
+            if (!k) return null;
+            const post = await redis.json.get(k) as Post | null;
+            return post ? { slug: post.slug, title: post.title } : null;
+        };
 
-    const [prev, next] = await Promise.all([fetchNeighbor(prevKey), fetchNeighbor(nextKey)]);
-    return { prev, next };
-  },
+        const [prev, next] = await Promise.all([fetchNeighbor(prevKey), fetchNeighbor(nextKey)]);
+        return { prev, next };
+    },
 
-  // --- RediSearch Integration ---
+    async ensureSearchIndex(): Promise<void> {
+        const redis = await getRedis();
+        try {
+            await redis.ft.info(POST_SEARCH_INDEX);
+        } catch (err) {
+            if (String(err).includes('Unknown index name')) {
+                // keep IDE complaint; runtime works fine
+                await redis.ft.create(POST_SEARCH_INDEX, schema, options);
+            } else {
+                throw err;
+            }
+        }
+    },
 
-  // ensureSearchIndex creates the RediSearch index if it doesn't already exist.
-  // This makes the search functionality self-initializing.
-  async ensureSearchIndex() {
-    const redis = await getRedis();
-    try {
-      await redis.ft.info(POST_SEARCH_INDEX);
-    } catch (e) {
-      if (String(e).includes('Unknown index name')) {
-        await redis.ft.create(
-          POST_SEARCH_INDEX,
-          {
-            '$.title': { type: 'TEXT', AS: 'title', WEIGHT: 10.0 },
-            '$.content': { type: 'TEXT', AS: 'content' },
-            '$.tags': { type: 'TAG', AS: 'tags' },
-            '$.author': { type: 'TEXT', AS: 'author' },
-          },
-          {
-            ON: 'JSON',
-            PREFIX: 'post:',
-          }
-        );
-      } else {
-        throw e;
-      }
-    }
-  },
-
-  // searchPosts performs a full-text search across the post index.
-  async searchPosts(query: string) {
-    await this.ensureSearchIndex();
-    const redis = await getRedis();
-
-    // The search result includes the total number of matching documents
-    // and the documents themselves, which contain the post objects.
-    const searchResults = await redis.ft.search(POST_SEARCH_INDEX, query);
-    
-    return {
-      total: searchResults.total,
-      // The `document` object from ft.search contains the full JSON object
-      // in its `value` property.
-      posts: searchResults.documents.map(doc => doc.value),
-    };
-  },
+    async searchPosts(query: string): Promise<{ total: number; posts: Post[] }> {
+        await this.ensureSearchIndex();
+        const redis = await getRedis();
+        const searchResults = await redis.ft.search(POST_SEARCH_INDEX, query);
+        return {
+            total: searchResults.total,
+            posts: searchResults.documents.map(doc => doc.value as Post),
+        };
+    },
 };
