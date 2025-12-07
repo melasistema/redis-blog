@@ -39,7 +39,7 @@
                 v-for="tag in uniqueTags"
                 :key="tag"
                 @click="searchByTag(tag)"
-                class="bg-secondary-light text-primary-dark py-2 px-4 rounded-full text-sm no-underline transition-colors hover:bg-primary-dark hover:text-white cursor-pointer"
+                class="bg-secondary text-white py-2 px-4 rounded-full text-sm no-underline transition-colors hover:bg-primary hover:text-white cursor-pointer"
               >
                 #{{ tag }}
               </span>

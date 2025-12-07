@@ -17,14 +17,16 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: defaultBlogConfig.colors.primary,
-        'primary-dark': '#0056b3',
-        secondary: defaultBlogConfig.colors.secondary,
-        'secondary-light': '#d6d8db',
-        text: defaultBlogConfig.colors.text,
-        background: defaultBlogConfig.colors.background,
-        error: '#e53e3e',
-        'error-light': '#ffebeb',
+          primary: defaultBlogConfig.colors.primary,
+          'primary-dark': defaultBlogConfig.colors['primary-dark'],
+          secondary: defaultBlogConfig.colors.secondary,
+          'secondary-dark': defaultBlogConfig.colors['secondary-dark'],
+          text: defaultBlogConfig.colors.text,
+          'text-dark': defaultBlogConfig.colors['text-dark'],
+          background: defaultBlogConfig.colors.background,
+          'background-dark': defaultBlogConfig.colors['background-dark'],
+          error: defaultBlogConfig.colors.error,
+          'error-dark': defaultBlogConfig.colors['error-dark'],
       },
       fontFamily: {
         sans: [defaultBlogConfig.typography.body.fontFamily, ...defaultTheme.fontFamily.sans],
