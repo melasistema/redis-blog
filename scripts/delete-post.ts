@@ -2,6 +2,7 @@
 import { createClient } from 'redis';
 import * as dotenv from 'dotenv';
 import * as readline from 'readline';
+import { printBanner } from '~/scripts/cli-banner';
 
 dotenv.config();
 
@@ -24,6 +25,9 @@ function slugify(text: string): string {
 }
 
 async function deletePost() {
+
+    printBanner();
+
     const redisUrl = process.env.NUXT_REDIS_URL || 'redis://localhost:6380';
     const redis = createClient({ url: redisUrl });
 

@@ -1,10 +1,14 @@
 
 import { createClient } from 'redis';
 import * as dotenv from 'dotenv';
+import { printBanner } from '~/scripts/cli-banner';
 
 dotenv.config();
 
 async function listPosts() {
+
+    printBanner();
+
     const redisUrl = process.env.NUXT_REDIS_URL || 'redis://localhost:6380';
     const redis = createClient({ url: redisUrl });
 

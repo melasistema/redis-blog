@@ -1,6 +1,7 @@
 import { createClient } from 'redis';
 import * as dotenv from 'dotenv';
 import * as readline from 'readline';
+import { printBanner } from '~/scripts/cli-banner';
 
 dotenv.config();
 
@@ -38,6 +39,9 @@ const getMultiLineInput = (prompt: string, terminator: string): Promise<string> 
 };
 
 async function createPost() {
+
+    printBanner();
+
     const redisUrl = process.env.NUXT_REDIS_URL || 'redis://localhost:6380';
     const redis = createClient({ url: redisUrl });
 

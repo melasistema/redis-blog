@@ -153,7 +153,7 @@ To use your own favicon:
 
 Manage your blog's content directly from the command line.
 
--   **Create a new post:** `npm run new-post` (Supports multi-line Markdown input; type `(end)` on a new line to finish.)
+-   **Create a new post:** `npm run post:new` (Supports multi-line Markdown input; type `(end)` on a new line to finish.)
 -   **List all posts:** `npm run post:list`
 -   **Delete a post:** `npm run post:delete`
 

@@ -4,7 +4,7 @@ import * as dotenv from 'dotenv';
 
 dotenv.config(); // Load environment variables from .env file
 
-// Simple slugify function (copied from API route for consistency)
+// Simple slugify function
 function slugify(text: string): string {
     return text
         .toString()
