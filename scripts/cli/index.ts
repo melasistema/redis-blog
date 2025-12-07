@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import { printBanner } from '../cli/utils/cli-banner';
 import { deletePostCLI } from './post/delete';
 import { listPostsCLI } from './post/list';
-import { createPostCLI } from './post/new';
+import { createPostCLI } from './post/create';
 import { editPostCLI } from './post/edit';
 import { searchPostCLI } from './post/search';
 
