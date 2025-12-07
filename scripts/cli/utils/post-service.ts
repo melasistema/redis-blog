@@ -160,4 +160,57 @@ export class PostService {
         await this.redis.save(); // Best-effort save.
         return post;
     }
+
+    // getPost retrieves a single, complete post object by its Redis key.
+    async getPost(key: string): Promise<Post | null> {
+        // We expect the result to be a single object, so we cast it.
+        // If the key doesn't exist, Redis returns null.
+        return await this.redis.json.get(key) as Post | null;
+    }
+
+    // updatePost updates an existing post. This is a more complex transaction
+    // than createPost, as it needs to account for changes in indexed fields
+    // like the slug (if the title changes) and tags.
+    async updatePost(key: string, updatedPost: Post): Promise<Post> {
+        const oldPost = await this.getPost(key);
+        if (!oldPost) {
+            throw new Error(`Post with key ${key} not found.`);
+        }
+
+        const multi = this.redis.multi();
+
+        // 1. Update the main JSON document with the new post data.
+        multi.json.set(key, '$', updatedPost as any);
+
+        // 2. If the title changed, the slug might have as well. Update the slugs hash.
+        const newSlug = slugify(updatedPost.title);
+        if (oldPost.slug !== newSlug) {
+            multi.hDel('slugs', oldPost.slug);
+            multi.hSet('slugs', newSlug, key);
+            updatedPost.slug = newSlug; // Ensure the post object has the correct new slug.
+        }
+
+        // 3. Compare the old and new tag lists to find what was added or removed.
+        const oldTags = new Set(oldPost.tags ?? []);
+        const newTags = new Set(updatedPost.tags ?? []);
+        
+        const tagsToAdd = [...newTags].filter(tag => !oldTags.has(tag));
+        const tagsToRemove = [...oldTags].filter(tag => !newTags.has(tag));
+
+        // Update tag sets accordingly.
+        for (const tag of tagsToAdd) {
+            multi.sAdd('tags:all', tag);
+            multi.sAdd(`tag:${slugify(tag)}`, key);
+        }
+        for (const tag of tagsToRemove) {
+            multi.sRem(`tag:${slugify(tag)}`, key);
+            // Note: We don't remove from 'tags:all' here, as other posts might still use it.
+            // A more advanced implementation might have a cleanup script for unused tags.
+        }
+
+        await multi.exec();
+        await this.redis.save();
+
+        return updatedPost;
+    }
 }

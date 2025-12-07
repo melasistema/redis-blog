@@ -163,7 +163,7 @@ This will present you with a main menu to choose from the following actions:
 *   **Create new post**: Add a new blog post. You will be prompted for a title, multi-line content (type `(end)` on a new line to finish), tags, and author.
 *   **List all posts**: Display a comprehensive list of all posts currently stored in Redis.
 *   **Delete a post**: Interactively select and remove an existing blog post. It will first show a full list of posts, then allow you to choose one to delete.
-*   **Edit a post**: (Coming soon) Modify the details of an existing blog post.
+*   **Edit a post**: Select a post to modify its title, tags, author, and content. The content will open in your system's default command-line editor (e.g., Vim, Nano).
 *   **Search posts**: (Coming soon) Find specific blog posts based on criteria.
 *   **Exit**: Close the CLI.
 
