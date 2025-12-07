@@ -225,16 +225,252 @@ This command builds the Nuxt application in production mode and runs it in a con
                 author: 'Boilerplate Bot',
                 tags: ['deployment', 'production', 'docker', 'devops'],
             },
+            {
+                title: 'A New Stack: Introducing Redis Nuxt Blog — A Sci-Fi Blog Boilerplate',
+                content: `
+
+# ✨ _A New Stack_ — Introducing **Redis Nuxt Blog**: A Sci-Fi Blog Boilerplate from a Galaxy Not So Far Away
+
+> _“A long time ago, in a server rack far, far away, a lone developer sought a faster way to publish their thoughts across the galaxy…”_
+
+If you’re a developer roaming the cosmic void in search of the perfect blogging platform — one fast enough to outrun hyperspace lag, simple enough to configure from a single holocron file, and powered by the mighty Force of Redis — your quest ends here.
+
+Welcome to **Redis Nuxt Blog**, a futuristic, high-performance boilerplate forged with **Nuxt 3**, **Redis Stack**, and a containerized fleet of **Docker Star Destroyers**.  
+Inspired by the legendary _Salvatore “antirez” Sanfilippo_, creator of Redis and intergalactic craftsman of absurdly fast data structures, this project aims to honor that sci-fi spirit — equal parts elegance, speed, and space-wizardry.
+
+Grab your lightsabers, devs. We’re jumping to lightspeed. 🚀⚡
+
+![Redis Nuxt Blog](https://raw.githubusercontent.com/melasistema/redis-blog/master/resources/images/redis-blog-poster-image.jpg)
+
+----------
+
+## 🌌 Why Another Blog Boilerplate?
+
+Because most blog starters are like broken droids — sluggish, uncustomizable, and likely to beep something rude at you when you change a font.
+
+**Redis Nuxt Blog** is built for developers who want:
+
+-   A fast, SSR-friendly, SEO-happy front-end
+    
+-   A database engine so quick it would embarrass a pod-racer
+    
+-   A deeply configurable UI without fiddling with 27 separate config files
+    
+-   A ready-to-launch Docker setup
+    
+-   A CLI so efficient it feels like talking to R2-D2 (but without the panic screams)
+    
+-   **A theming system powered by Tailwind CSS, customizable from one file**
+    
+-   **Markdown-powered post content**
+    
+-   **Dynamic excerpts and content width control**
+    
+
+----------
+
+## ✨ Core Features (Translated from Wookiee)
+
+### 🚀 Nuxt.js 3 Frontend
+
+Modern. Fast. SSR-powered.  
+Perfect for blogs, portals, and broadcasting your galactic manifestos.
+
+### ⚡ Redis Stack as the Primary Database
+
+Forget SQL. Forget slow disks.  
+We harness the **Quantum Hyperdrive** (a.k.a RedisJSON + Redis Sorted Sets) to store posts with blazing speed.
+
+Salvatore Sanfilippo didn’t intend Redis to be a sci-fi artifact… but let’s be honest, it might as well have been forged from midichlorians.
+
+![Redis Nuxt Blog](https://raw.githubusercontent.com/melasistema/redis-blog/master/resources/images/redis-blog-hyperdrive-performance.jpg)
+
+### 🎨 One Config File to Rule Them All (Now With Full Tailwind Integration)
+
+Every visual setting — fonts, weights, palette, spacing, even content width — comes from:
+
+\`config/blog.config.ts\` 
+
+This single file now controls:
+
+-   Typography per heading level
+    
+-   Full Tailwind color palette generation
+    
+-   Global content max-width
+    
+-   Header title & tagline
+    
+-   Layout constraints
+    
+
+Balance to the styling Force, at last.
+
+### ✂️ Post Excerpts (New!)
+
+Enable **post previews** on the homepage with:
+
+-   \`postExcerpt.enabled\`
+    
+-   \`postExcerpt.maxLength\`
+    
+
+Perfect for teasing your readers like a Holonet trailer.
+
+### ↔️ Post Navigation
+
+Navigate between posts like browsing encrypted Jedi archives.
+
+### 📝 Markdown Support
+
+Posts are fully Markdown-powered — headings, lists, code blocks, even multi-line input via CLI.
+
+Write your galactic knowledge in pure Markdown. No HTML acrobatics needed.
+
+### 📦 Dockerized Everything
+
+Spin up Nuxt + Redis with one command:
+
+\`docker compose up -d --build\` 
+
+Your dev environment becomes as consistent as Stormtrooper aim (but… good).
+
+### 📜 Content CLI (Upgraded!)
+
+Create, list, delete posts with simple commands:
+
+\`npm run new-post
+npm run post:list
+npm run post:delete\` 
+
+The CLI now supports:
+
+-   Multi-line Markdown input
+    
+-   Automatically generated slugs
+    
+-   Default author fallback
+    
+
+You are now the administrator of your own Holocron Library.
+
+----------
+
+## 🛰️ Tech Stack: What Our Starship Is Made Of
+
+-   **Nuxt 3** — the elegant lightsaber
+    
+-   **Redis Stack w/ RedisJSON** — the hyperdrive core
+    
+-   **Tailwind CSS** — the robe of a modern Jedi developer
+    
+-   **Google Fonts module** — for typographic wizardry
+    
+-   **Docker Compose** — the Imperial Fleet
+    
+-   **TypeScript + tsx runtime** — because even smugglers need types
+
+
+![Redis Nuxt Blog](https://raw.githubusercontent.com/melasistema/redis-blog/master/resources/images/redis-blog-the-ultimate-tech-stack.jpg)
+    
+
+----------
+
+## 🛠️ The Holocron of Configuration (Updated!)
+
+Everything — fonts, colors, layout, excerpts, pagination — lives in:
+
+\`config/blog.config.ts\` 
+
+New additions include:
+
+-   \`headerTitle\`
+    
+-   \`headerTagline\`
+    
+-   Dynamic Tailwind theme generation
+    
+-   \`contentMaxWidth\`
+    
+-   Post excerpts config
+    
+
+Want your blog to have an imperial blue palette?  
+Done.
+
+Want H1 in _Englebert_ and H2 in _Roboto Slab_?  
+Absolutely.
+
+Want your content width to feel like the inside of a Star Destroyer corridor?  
+Just set a new max-width.
+
+----------
+
+## 🔌 API Endpoints (For the Droids Among Us)
+
+| Endpoint | Method | Description |
+| -------- | -----  | ----------- |
+| \`/api/posts\` | GET | Retrieve posts. Supports \`?page=N\` |
+| \`/api/posts/:slug\` | GET | Fetch single post + neighbors |
+| \`/api/tags\` | GET | Retrieve all tags |
+
+Perfect for custom frontends, mobile apps, or your own droid companion.
+
+----------
+
+## 🪐 Why Developers Love This
+
+Because **simplicity** + **power** = developer bliss.
+
+Because Redis is a piece of sci-fi technology disguised as a database.
+
+Because Nuxt 3 is smooth as sliding through hyperspace.
+
+Because Tailwind lets you customize everything without rewriting CSS.
+
+Because Markdown posts feel like writing Jedi scrolls.
+
+And because every post stored in Redis Sorted Sets is basically organized by the Force.
+
+----------
+
+## 👤 Author & Origin Story
+
+Built by **[Luca Visciola](https://github.com/melasistema)** — drummer, developer, and happy dad.
+
+Inspired by **[Salvatore “antirez” Sanfilippo](https://antirez.com)**, whose creation Redis is widely believed to be running not on silicon… but on compressed fragments of a neutron star.
+
+----------
+
+## 🛸 Final Transmission
+
+If you're searching for a fast, flexible, sci-fi-friendly blog engine that handles posts faster than the Millennium Falcon outruns TIE Fighters, this boilerplate may be the one you’re looking for.
+
+Clone it.  
+Customize it.  
+Seed it.  
+Deploy it.
+
+👉 **GitHub Repository:**  
+**[https://github.com/melasistema/redis-blog](https://github.com/melasistema/redis-blog)**
+
+And may the **Force of Redis** be with you. ❤️‍🔥
+`,
+                author: 'Luca Visciola',
+                tags: ['announcement', 'release', 'nuxt', 'redis', 'blog'],
+            }
         ];
 
         for (const postData of examplePosts) {
             const id = Math.random().toString(36).substring(2, 12);
             const slug = slugify(postData.title);
 
-            // Generate random creation dates (within last 30 days)
-            const createdAt = new Date(
-                Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000
-            ).toISOString();
+            // If this is the special Dev.to article → force newest timestamp
+            const isFeatured = postData.title.startsWith('A New Stack: Introducing Redis Nuxt Blog');
+
+            const createdAt = isFeatured
+                ? new Date().toISOString() // always newest post
+                : new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString();
 
             const post = {
                 id,
