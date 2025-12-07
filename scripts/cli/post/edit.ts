@@ -57,6 +57,7 @@ export async function editPostCLI() {
                 name: 'title',
                 message: 'Post Title:',
                 default: postToEdit.title,
+                validate: (input) => input ? true : 'Title cannot be empty.',
             },
             {
                 type: 'editor', // The 'editor' type is best for multi-line content.

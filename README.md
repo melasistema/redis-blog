@@ -151,6 +151,8 @@ To use your own favicon:
 
 ## 🛠️ How To (CLI)
 
+![CLI Preview](resources/images/redis-blog-cli-preview.jpg)
+
 Manage your blog's content directly from the command line using the interactive CLI menu.
 
 To launch the CLI, run:
@@ -164,7 +166,7 @@ This will present you with a main menu to choose from the following actions:
 *   **List all posts**: Display a comprehensive list of all posts currently stored in Redis.
 *   **Delete a post**: Interactively select and remove an existing blog post. It will first show a full list of posts, then allow you to choose one to delete.
 *   **Edit a post**: Select a post to modify its title, tags, author, and content. The content will open in your system's default command-line editor (e.g., Vim, Nano).
-*   **Search posts**: (Coming soon) Find specific blog posts based on criteria.
+*   **Search posts**: Find specific blog posts using RediSearch query syntax (e.g., `"redis blog"`, `@tags:{tutorial}`, `@title:custom`, `@content:custom`).
 *   **Exit**: Close the CLI.
 
 Follow the on-screen prompts to perform your desired action.

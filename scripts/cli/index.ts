@@ -1,5 +1,5 @@
 #!/usr/bin/env tsx
-import 'dotenv/config'; // Load environment variables at the very start.
+import 'dotenv/config';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
 import { printBanner } from '../cli/utils/cli-banner';
@@ -7,7 +7,7 @@ import { deletePostCLI } from './post/delete';
 import { listPostsCLI } from './post/list';
 import { createPostCLI } from './post/new';
 import { editPostCLI } from './post/edit';
-// import { searchPostsCLI } from './post/search';
+import { searchPostCLI } from './post/search';
 
 async function mainMenu() {
     printBanner();
@@ -19,7 +19,7 @@ async function mainMenu() {
     console.log(chalk.gray('  - List: View all existing blog posts.'));
     console.log(chalk.gray('  - Delete: Remove a blog post.'));
     console.log(chalk.gray('  - Edit: Modify an existing blog post.'));
-    console.log(chalk.gray('  - Search: Find specific blog posts (coming soon!).'));
+    console.log(chalk.gray('  - Search: Find specific blog posts.'));
     console.log(chalk.gray('  - Exit: Close the CLI.'));
     
     const { action } = await inquirer.prompt([
@@ -53,8 +53,7 @@ async function mainMenu() {
             await deletePostCLI();
             break;
         case 'search':
-            // await searchPostsCLI();
-            console.log(chalk.yellow('Search posts not implemented yet.'));
+            await searchPostCLI();
             break;
         case 'exit':
             console.log(chalk.green('Goodbye!'));

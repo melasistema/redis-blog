@@ -179,16 +179,25 @@ export class PostService {
 
         const multi = this.redis.multi();
 
-        // 1. Update the main JSON document with the new post data.
-        multi.json.set(key, '$', updatedPost as any);
-
-        // 2. If the title changed, the slug might have as well. Update the slugs hash.
+        // 1. Check if the slug needs to be updated and modify the object *before* queueing the save.
         const newSlug = slugify(updatedPost.title);
         if (oldPost.slug !== newSlug) {
+            // If the slug changed, delete the old slug from the hash index.
             multi.hDel('slugs', oldPost.slug);
-            multi.hSet('slugs', newSlug, key);
-            updatedPost.slug = newSlug; // Ensure the post object has the correct new slug.
+
+            // Only set a new slug if the new title generates a valid one.
+            if (newSlug) {
+                updatedPost.slug = newSlug; // IMPORTANT: Update the slug on the object itself.
+                multi.hSet('slugs', newSlug, key); // Add the new slug to the hash index.
+            } else {
+                // If the new title results in an empty slug, revert to the old one.
+                updatedPost.slug = oldPost.slug;
+            }
         }
+
+        // 2. Now queue the command to save the post's JSON object.
+        // It will now have the correct slug.
+        multi.json.set(key, '$', updatedPost as any);
 
         // 3. Compare the old and new tag lists to find what was added or removed.
         const oldTags = new Set(oldPost.tags ?? []);
@@ -197,7 +206,7 @@ export class PostService {
         const tagsToAdd = [...newTags].filter(tag => !oldTags.has(tag));
         const tagsToRemove = [...oldTags].filter(tag => !newTags.has(tag));
 
-        // Update tag sets accordingly.
+        // 4. Update tag sets accordingly.
         for (const tag of tagsToAdd) {
             multi.sAdd('tags:all', tag);
             multi.sAdd(`tag:${slugify(tag)}`, key);
@@ -208,9 +217,88 @@ export class PostService {
             // A more advanced implementation might have a cleanup script for unused tags.
         }
 
+        // 5. Execute the atomic transaction.
         await multi.exec();
         await this.redis.save();
 
         return updatedPost;
+    }
+
+    // --- RediSearch Integration ---
+    private readonly POST_SEARCH_INDEX = 'idx:posts';
+
+    // ensureSearchIndex is a defensive method to prevent errors on the first run.
+    // It uses FT.INFO to check for the index's existence. If the index is missing,
+    // it uses FT.CREATE to build it from our schema definition. This approach
+    // makes the CLI self-initializing without requiring a separate setup script.
+    async ensureSearchIndex(): Promise<void> {
+        try {
+            await this.redis.ft.info(this.POST_SEARCH_INDEX);
+        } catch (e) {
+            if (String(e).includes('Unknown index name')) {
+                console.log(chalk.yellow(`Index '${this.POST_SEARCH_INDEX}' not found. Creating it now...`));
+                try {
+                    // This schema tells RediSearch which fields in our JSON documents
+                    // should be indexed, what to call them, and their types.
+                    // Giving a higher WEIGHT to 'title' makes it more relevant in searches.
+                    await this.redis.ft.create(
+                        this.POST_SEARCH_INDEX,
+                        {
+                            '$.title': { type: 'TEXT', AS: 'title', WEIGHT: 10.0 },
+                            '$.content': { type: 'TEXT', AS: 'content' },
+                            '$.tags': { type: 'TAG', AS: 'tags' },
+                            '$.author': { type: 'TEXT', AS: 'author' },
+                            '$.slug': { type: 'TEXT', AS: 'slug' },
+                        },
+                        {
+                            ON: 'JSON',
+                            PREFIX: 'post:', // We only want to index blog posts.
+                        }
+                    );
+                    console.log(chalk.green(`RediSearch index '${this.POST_SEARCH_INDEX}' created successfully.`));
+                } catch (createError) {
+                    console.error(chalk.red('Failed to create RediSearch index:'), createError);
+                    throw createError;
+                }
+            } else {
+                throw e; // For any other unexpected error, we should not proceed.
+            }
+        }
+    }
+
+    // searchPosts abstracts the FT.SEARCH command. It takes a raw query string,
+    // which allows for the full power of RediSearch's query language, and returns
+    // a list of lightweight post items. We use RETURN to ask RediSearch to only
+    // send back the fields we need, which is more efficient than returning the
+    // full JSON document.
+    async searchPosts(query: string): Promise<PostListItem[]> {
+        await this.ensureSearchIndex();
+
+        const searchResults = await this.redis.ft.search(
+            this.POST_SEARCH_INDEX,
+            query,
+            {
+                RETURN: ['$.title', '$.slug', '$.tags', '$.id'],
+            }
+        );
+
+        const posts: PostListItem[] = [];
+        for (const doc of searchResults.documents) {
+            const values = doc.value as {
+                '$.title': string;
+                '$.slug': string;
+                '$.tags'?: string;
+            };
+
+            if (!values) continue;
+
+            posts.push({
+                key: doc.id,
+                title: values['$.title'],
+                slug: values['$.slug'],
+                tags: values['$.tags']?.split(',') || [],
+            });
+        }
+        return posts;
     }
 }
