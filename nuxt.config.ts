@@ -73,7 +73,8 @@ export default defineNuxtConfig({
   },
   modules: [
     '@nuxtjs/google-fonts',
-    '@nuxtjs/tailwindcss'
+    '@nuxtjs/tailwindcss',
+    '@nuxtjs/sitemap'
   ],
   googleFonts: {
     families: getGoogleFontsFamilies(),
@@ -91,9 +92,18 @@ export default defineNuxtConfig({
       ],
     },
   },
+  sitemap: {
+    hostname: process.env.NUXT_PUBLIC_URL || 'http://localhost:3000', // Use NUXT_PUBLIC_URL for hostname
+  } as any,
   nitro: {
     preset: 'node-server',
-    compatibilityDate: '2025-11-23'
+    compatibilityDate: '2025-11-23',
+    prerender: {
+      routes: [
+        '/', // Ensure homepage is prerendered
+        '/api/sitemap-urls', // Ensure sitemap API endpoint is prerendered
+      ],
+    },
   },
   // Optional: Add any other Nuxt configuration here
   devtools: { enabled: true },

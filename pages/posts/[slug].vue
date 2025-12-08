@@ -51,6 +51,7 @@
 import { useRoute } from 'vue-router';
 import { computed } from 'vue';
 import { marked } from 'marked';
+import { usePostSeo } from '~/composables/useSeo';
 
 const route = useRoute();
 const slug = route.params.slug;
@@ -65,6 +66,11 @@ const { data: result, pending, error } = await useFetch(`/api/posts/${slug}`, {
 
 const post = computed(() => result.value.post);
 const neighbors = computed(() => result.value.neighbors || { prev: null, next: null });
+
+// Set SEO for the post
+if (post.value) {
+  usePostSeo(post.value);
+}
 
 // Custom renderer to demote heading levels for SEO
 const renderer = new marked.Renderer();

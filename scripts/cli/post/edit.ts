@@ -3,6 +3,7 @@ import inquirer from 'inquirer';
 import chalk from 'chalk';
 import { PostService } from '../utils/post-service';
 import type { Post } from '../utils/post-service';
+import { getRedisClient } from '../utils/redis-client'; // Import getRedisClient
 
 /**
  * An interactive CLI function to select and edit an existing blog post.
@@ -11,7 +12,7 @@ export async function editPostCLI() {
     const postService = new PostService();
     
     try {
-        await postService.connect();
+        await getRedisClient().connect(); // Connect Redis client
         console.log(chalk.blue('Fetching posts to edit...'));
         
         // 1. Fetch the list of posts to select from.
@@ -99,7 +100,7 @@ export async function editPostCLI() {
     } catch (err) {
         console.error(chalk.red('An error occurred while editing the post:'), err);
     } finally {
-        await postService.disconnect();
+        await getRedisClient().disconnect(); // Disconnect Redis client
         console.log(chalk.gray('\nDisconnected from Redis.'));
     }
 }

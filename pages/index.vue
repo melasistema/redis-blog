@@ -103,11 +103,21 @@
 import { ref, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { marked } from 'marked';
+import { useSeo } from '~/composables/useSeo'; // Import useSeo
 
 const route = useRoute();
 const router = useRouter();
 const runtimeConfig = useRuntimeConfig();
 const blogConfig = runtimeConfig.public.blogConfig;
+
+// Set SEO for the homepage
+// Set SEO for the homepage
+useSeo({
+  title: blogConfig.siteName,
+  description: blogConfig.headerTagline.replace(/<[^>]*>?/gm, ''), // Strip HTML tags from tagline
+  url: '/', // Base URL
+  type: 'website',
+});
 const paginationEnabled = blogConfig.pagination.enabled;
 
 // --- Search State ---
@@ -149,7 +159,7 @@ renderer.heading = (text, level) => {
 
 // Fetch posts from our API endpoint. This is now reactive to both search and pagination.
 const { data: postsData, pending: postsPending, error: postsError } = await useFetch('/api/posts', {
-  query: queryParams,
+  query: queryParams, // Use reactive queryParams
   default: () => ({ posts: [], meta: {} }),
   transform: (res) => {
     if (!res || !res.posts) return { posts: [], meta: {} };
@@ -162,7 +172,6 @@ const { data: postsData, pending: postsPending, error: postsError } = await useF
         content = content.substring(0, Math.min(content.length, content.lastIndexOf(' ')));
         content += '...';
       }
-      // a temporary diagnostic change to isolate a bug.
       return { ...post, content: marked.parse(content, { renderer }) };
     });
     return res;

@@ -3,13 +3,14 @@ import inquirer from 'inquirer';
 import chalk from 'chalk';
 import { PostService } from '../utils/post-service';
 import type { PostListItem } from '../utils/post-service';
+import { getRedisClient } from '../utils/redis-client'; // Import getRedisClient
 
 // An interactive CLI for finding and removing a blog post.
 export async function deletePostCLI() {
     const postService = new PostService();
     
     try {
-        await postService.connect();
+        await getRedisClient().connect(); // Connect Redis client
         console.log(chalk.blue('Fetching posts from Redis...'));
         const posts = await postService.listPosts();
 
@@ -81,7 +82,7 @@ export async function deletePostCLI() {
     } catch (err) {
         console.error(chalk.red('An error occurred while trying to delete the post:'), err);
     } finally {
-        await postService.disconnect();
+        await getRedisClient().disconnect(); // Disconnect Redis client
         console.log(chalk.gray('Disconnected from Redis.'));
     }
 }

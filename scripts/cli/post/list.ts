@@ -2,13 +2,14 @@
 import chalk from 'chalk';
 import { PostService } from '../utils/post-service';
 import type { PostListItem } from '../utils/post-service';
+import { getRedisClient } from '../utils/redis-client'; // Import getRedisClient
 
 // A simple, non-interactive command to display all posts in the database.
 export async function listPostsCLI() {
     const postService = new PostService();
 
     try {
-        await postService.connect();
+        await getRedisClient().connect(); // Connect Redis client
         console.log(chalk.blue('Fetching all blog posts...'));
 
         const posts = await postService.listPosts();
@@ -31,7 +32,7 @@ export async function listPostsCLI() {
     } catch (error) {
         console.error(chalk.red('Failed to list posts:'), error);
     } finally {
-        await postService.disconnect();
+        await getRedisClient().disconnect(); // Disconnect Redis client
         console.log(chalk.gray('Disconnected from Redis.'));
     }
 }

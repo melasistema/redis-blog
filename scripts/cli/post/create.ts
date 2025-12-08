@@ -3,6 +3,7 @@ import inquirer from 'inquirer';
 import chalk from 'chalk';
 import * as readline from 'readline';
 import { PostService } from '../utils/post-service';
+import { getRedisClient } from '../utils/redis-client'; // Import getRedisClient
 
 // Inquirer is great for structured prompts, but not for free-form multi-line
 // input. For that, we use Node's `readline` module directly. This function
@@ -57,7 +58,22 @@ export async function createPostCLI() {
         // for the post's main content.
         const content = await getMultiLineInput('Post Content:', '(end)');
 
-        // Finally, return to Inquirer for the remaining metadata.
+        // Add new prompts for excerpt and image
+        const { excerpt, image } = await inquirer.prompt([
+            {
+                type: 'input',
+                name: 'excerpt',
+                message: 'Post Excerpt (optional, for SEO):',
+                default: '', // Make it optional
+            },
+            {
+                type: 'input',
+                name: 'image',
+                message: 'Featured Image URL (optional, for Open Graph):',
+                default: '', // Make it optional
+            },
+        ]);
+
         const { tags, author } = await inquirer.prompt([
             {
                 type: 'input',
@@ -75,11 +91,14 @@ export async function createPostCLI() {
         const postData = {
             title: title,
             content: content,
+            excerpt: excerpt || content.substring(0, 150), // Use provided excerpt or generate from content
+            image: image || null, // Use provided image or null
             author: author,
             tags: tags.split(',').map((tag: string) => tag.trim()).filter(Boolean),
+            createdAt: Date.now(), // Add createdAt timestamp
         };
 
-        await postService.connect();
+        await getRedisClient().connect(); // Connect Redis client
         console.log(chalk.blue('\nSaving post to Redis...'));
 
         const newPost = await postService.createPost(postData);
@@ -88,12 +107,15 @@ export async function createPostCLI() {
         console.log(chalk.white(`   - Title: ${newPost.title}`));
         console.log(chalk.white(`   - Author: ${newPost.author}`));
         console.log(chalk.white(`   - Slug: ${newPost.slug}`));
+        if (newPost.excerpt) console.log(chalk.white(`   - Excerpt: ${newPost.excerpt.substring(0, 50)}...`));
+        if (newPost.image) console.log(chalk.white(`   - Image: ${newPost.image}`));
         console.log(chalk.white(`   - Tags: ${newPost.tags?.join(', ')}`));
+        console.log(chalk.white(`   - Created At: ${new Date(newPost.createdAt).toLocaleString()}`));
 
     } catch (err) {
         console.error(chalk.red('An error occurred while creating the post:'), err);
     } finally {
-        await postService.disconnect();
+        await getRedisClient().disconnect(); // Disconnect Redis client
         console.log(chalk.gray('\nDisconnected from Redis.'));
     }
 }
