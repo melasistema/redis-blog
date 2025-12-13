@@ -29,6 +29,8 @@ services:
     # We use redis-stack-server to get RedisJSON, RediSearch, and RedisInsight
     image: redis/redis-stack-server:latest
     container_name: nuxt_blog_redis
+    environment:
+      - REDIS_ARGS=--save 60 1 --appendonly yes
     ports:
       # Standard Redis port
       - "6380:6379"

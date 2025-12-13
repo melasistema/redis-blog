@@ -42,7 +42,7 @@ export async function editPostCLI() {
 
         // 3. Fetch the full details of the selected post, including its content.
         console.log(chalk.blue(`\nLoading full post data for "${selectedPostSummary.title}"...`));
-        const postToEdit = await postService.getPost(selectedPostSummary.key);
+        const postToEdit = await postService.getPost(selectedPostSummary.slug);
 
         if (!postToEdit) {
             console.error(chalk.red('Could not fetch the full post. It may have been deleted.'));
@@ -92,9 +92,9 @@ export async function editPostCLI() {
 
         // 6. Call the updatePost method in PostService.
         console.log(chalk.blue('\nSaving updated post to Redis...'));
-        await postService.updatePost(selectedPostSummary.key, updatedPost);
+        await postService.updatePost(selectedPostSummary.slug, updatedPost);
 
-        console.log(chalk.green('\n✅ Successfully updated the post!'));
+        console.log(chalk.green('\nSuccessfully updated the post!'));
         console.log(chalk.white(`   - Title: ${updatedPost.title}`));
 
     } catch (err) {

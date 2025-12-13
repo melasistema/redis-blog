@@ -26,29 +26,29 @@ export interface Post {
     createdAt: number; // Timestamp of post creation
     author?: string;
     tags?: string[];
-};
+}
 
 export type NeighborPost = { slug: string; title: string } | null;
 
 // --- RediSearch schema ---
 const schema = {
-    '$.title': { type: 'TEXT', AS: 'title', WEIGHT: 10 },
-    '$.content': { type: 'TEXT', AS: 'content' },
-    '$.tags': { type: 'TAG', AS: 'tags' },
-    '$.author': { type: 'TEXT', AS: 'author' },
+    '$.title': { type: 'TEXT' as const, AS: 'title', WEIGHT: 10 },
+    '$.content': { type: 'TEXT' as const, AS: 'content' },
+    '$.tags': { type: 'TAG' as const, AS: 'tags' },
+    '$.author': { type: 'TEXT' as const, AS: 'author' },
 };
 
 // --- RediSearch create options ---
 const options = {
-    ON: 'JSON',
+    ON: 'JSON' as const,
     PREFIX: 'post:',
-    STOPWORDS: [],
+    STOPWORDS: [] as string[],
 };
 
 // --- Repository ---
-export const PostRepositoryCLI = { // Renamed to PostRepositoryCLI
+export const PostRepositoryCLI = {
     async getLatest(limit = 20): Promise<Post[]> {
-        const redis = getRedisClient(); // Use CLI redis client
+        const redis = getRedisClient();
         const keys = await redis.zRange('posts:by_date', 0, limit - 1, { REV: true });
         if (!keys.length) return [];
         const results = await redis.json.mGet(keys, '$') as (Post[] | null)[];
@@ -56,7 +56,7 @@ export const PostRepositoryCLI = { // Renamed to PostRepositoryCLI
     },
 
     async getPaginated(offset: number, limit: number): Promise<Post[]> {
-        const redis = getRedisClient(); // Use CLI redis client
+        const redis = getRedisClient();
         const keys = await redis.zRange('posts:by_date', offset, offset + limit - 1, { REV: true });
         if (!keys.length) return [];
         const results = await redis.json.mGet(keys, '$') as (Post[] | null)[];
@@ -64,19 +64,28 @@ export const PostRepositoryCLI = { // Renamed to PostRepositoryCLI
     },
 
     async getTotalCount(): Promise<number> {
-        const redis = getRedisClient(); // Use CLI redis client
+        const redis = getRedisClient();
         return redis.zCard('posts:by_date');
     },
 
     async getBySlug(slug: string): Promise<Post | null> {
-        const redis = getRedisClient(); // Use CLI redis client
+        const redis = getRedisClient();
         const key = await redis.hGet('slugs', slug);
-        if (!key) return null;
-        return redis.json.get(key) as Promise<Post | null>;
+        if (!key) {
+            console.error(chalk.red(`No key found for slug: ${slug}`));
+            return null;
+        }
+        try {
+            const result = await redis.json.get(key, { path: '$' }) as Post[] | null;
+            return result?.[0] || null;
+        } catch (err) {
+            console.error(chalk.red(`Error fetching post with key ${key}:`, err));
+            return null;
+        }
     },
 
     async getNeighbors(slug: string): Promise<{ prev: NeighborPost; next: NeighborPost }> {
-        const redis = getRedisClient(); // Use CLI redis client
+        const redis = getRedisClient();
         const key = await redis.hGet('slugs', slug);
         if (!key) return { prev: null, next: null };
 
@@ -88,8 +97,14 @@ export const PostRepositoryCLI = { // Renamed to PostRepositoryCLI
 
         const fetchNeighbor = async (k: string | undefined): Promise<NeighborPost> => {
             if (!k) return null;
-            const post = await redis.json.get(k) as Post | null;
-            return post ? { slug: post.slug, title: post.title } : null;
+            try {
+                const result = await redis.json.get(k, { path: '$' }) as Post[] | null;
+                const post = result?.[0];
+                return post ? { slug: post.slug, title: post.title } : null;
+            } catch (err) {
+                console.error(chalk.red(`Error fetching neighbor ${k}:`, err));
+                return null;
+            }
         };
 
         const [prev, next] = await Promise.all([fetchNeighbor(prevKey), fetchNeighbor(nextKey)]);
@@ -97,16 +112,20 @@ export const PostRepositoryCLI = { // Renamed to PostRepositoryCLI
     },
 
     async getAllSlugs(): Promise<Array<{ slug: string; createdAt: number }>> {
-        const redis = getRedisClient(); // Use CLI redis client
-        const keys = await redis.zRange('posts:by_date', 0, -1); // Get all post keys
+        const redis = getRedisClient();
+        const keys = await redis.zRange('posts:by_date', 0, -1);
         if (!keys.length) return [];
 
-        // Fetch slug and createdAt for each post key
         const results = await Promise.all(
             keys.map(async (key) => {
-                const post = await redis.json.get(key, '$.slug', '$.createdAt') as [string | null, number | null]; // Get slug and createdAt
-                if (post && post[0] && post[1]) {
-                    return { slug: post[0], createdAt: post[1] };
+                try {
+                    const result = await redis.json.get(key, { path: '$' }) as Post[] | null;
+                    const post = result?.[0];
+                    if (post && post.slug && post.createdAt) {
+                        return { slug: post.slug, createdAt: post.createdAt };
+                    }
+                } catch (err) {
+                    console.error(chalk.red(`Error fetching post ${key}:`, err));
                 }
                 return null;
             })
@@ -149,8 +168,85 @@ export const PostRepositoryCLI = { // Renamed to PostRepositoryCLI
 
         await multi.exec();
         console.log(chalk.gray(`Redis transaction executed for new post: "${post.title}"`));
-        
-        // await redis.save(); // save is handled by top-level CLI command
+
+        return post;
+    },
+
+    async updatePost(slug: string, updatedPost: Post): Promise<Post> {
+        const redis = getRedisClient();
+        const oldKey = `post:${slug}`;
+        const newSlug = slugify(updatedPost.title);
+        const newKey = `post:${newSlug}`;
+
+        const result = await redis.json.get(oldKey, { path: '$' }) as Post[] | null;
+        const existingPost = result?.[0] || null;
+        if (!existingPost) {
+            throw new Error(`Post with slug "${slug}" not found`);
+        }
+
+        const post: Post = {
+            slug: newSlug,
+            title: updatedPost.title,
+            content: updatedPost.content,
+            excerpt: updatedPost.excerpt || updatedPost.content?.substring(0, 150),
+            image: updatedPost.image,
+            author: updatedPost.author,
+            tags: updatedPost.tags,
+            createdAt: updatedPost.createdAt,
+        };
+
+        const multi = redis.multi();
+
+        if (slug !== newSlug) {
+            multi.json.set(newKey, '$', post as any);
+            multi.zRem('posts:by_date', oldKey);
+            multi.zAdd('posts:by_date', { score: post.createdAt, value: newKey });
+            multi.hDel('slugs', slug);
+            multi.hSet('slugs', newSlug, newKey);
+
+            if (existingPost.tags?.length) {
+                for (const tag of existingPost.tags) {
+                    multi.sRem(`tag:${slugify(tag)}`, oldKey);
+                }
+            }
+
+            if (post.tags?.length) {
+                for (const tag of post.tags) {
+                    const cleanTag = tag.trim();
+                    if (cleanTag) {
+                        multi.sAdd('tags:all', cleanTag);
+                        multi.sAdd(`tag:${slugify(cleanTag)}`, newKey);
+                    }
+                }
+            }
+
+            multi.json.del(oldKey, '$');
+        } else {
+            multi.json.set(oldKey, '$', post as any);
+
+            const oldTags = new Set(existingPost.tags || []);
+            const newTags = new Set(post.tags || []);
+
+            for (const tag of oldTags) {
+                if (!newTags.has(tag)) {
+                    multi.sRem(`tag:${slugify(tag)}`, oldKey);
+                }
+            }
+
+            for (const tag of newTags) {
+                if (!oldTags.has(tag)) {
+                    const cleanTag = tag.trim();
+                    if (cleanTag) {
+                        multi.sAdd('tags:all', cleanTag);
+                        multi.sAdd(`tag:${slugify(cleanTag)}`, oldKey);
+                    }
+                }
+            }
+        }
+
+        await multi.exec();
+        console.log(chalk.gray(`Redis transaction executed for updating post: "${post.title}"`));
+
         return post;
     },
 
@@ -167,20 +263,19 @@ export const PostRepositoryCLI = { // Renamed to PostRepositoryCLI
                 multi.sRem(`tag:${slugify(tag)}`, post.key);
             }
         }
-        
+
         console.log(chalk.gray(`Preparing Redis transaction to delete post: "${post.title}" (Key: ${post.key})`));
 
         await multi.exec();
-        // await redis.save(); // save is handled by top-level CLI command
     },
 
     async ensureSearchIndex(): Promise<void> {
-        const redis = getRedisClient(); // Use CLI redis client
+        const redis = getRedisClient();
         try {
             await redis.ft.info(POST_SEARCH_INDEX);
         } catch (err) {
             if (String(err).includes('Unknown index name')) {
-                // keep IDE complaint; runtime works fine
+                // @ts-ignore - Redis type definitions are strict, but this works at runtime
                 await redis.ft.create(POST_SEARCH_INDEX, schema, options);
             } else {
                 throw err;
@@ -190,11 +285,11 @@ export const PostRepositoryCLI = { // Renamed to PostRepositoryCLI
 
     async searchPosts(query: string): Promise<{ total: number; posts: Post[] }> {
         await this.ensureSearchIndex();
-        const redis = getRedisClient(); // Use CLI redis client
+        const redis = getRedisClient();
         const searchResults = await redis.ft.search(POST_SEARCH_INDEX, query);
         return {
             total: searchResults.total,
-            posts: searchResults.documents.map(doc => doc.value as Post),
+            posts: searchResults.documents.map(doc => doc.value as unknown as Post),
         };
     },
 };
