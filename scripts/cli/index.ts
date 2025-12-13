@@ -6,7 +6,6 @@
  * file that was distributed with this source code.
  */
 
-#!/usr/bin/env tsx
 import 'dotenv/config';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
