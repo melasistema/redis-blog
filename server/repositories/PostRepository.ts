@@ -1,4 +1,4 @@
-// server-and-cli/PostRepository.ts
+// server/PostRepository.ts
 
 import type { RedisClientType } from 'redis';
 import { slugify } from '~/server/utils/slugify';
@@ -92,8 +92,8 @@ export class PostRepository {
 
         const results = await Promise.all(
             keys.map(async key => {
-                const slug = await redis.json.get(key, '$.slug') as string | null;
-                const createdAtRaw = await redis.json.get(key, '$.createdAt');
+                const slug = await redis.json.get(key, { path: ['$.slug'] }) as string | null;
+                const createdAtRaw = await redis.json.get(key, { path: ['$.createdAt'] });
                 const createdAt = typeof createdAtRaw === 'number' ? createdAtRaw : Number(createdAtRaw);
                 if (slug && !isNaN(createdAt)) return { slug, createdAt };
                 return null;
@@ -133,7 +133,7 @@ export class PostRepository {
         const newSlug = slugify(updated.title);
         const newKey = `post:${newSlug}`;
 
-        const existing = await redis.json.get(oldKey, '$') as Post | null; // Corrected: directly get Post | null
+        const existing = await redis.json.get(oldKey, { path: ['$'] }) as Post | null; // Corrected: directly get Post | null
         if (!existing) {
             throw new Error(`Post ${slug} not found`);
         }
@@ -179,7 +179,7 @@ export class PostRepository {
             await redis.ft.info(POST_SEARCH_INDEX);
         } catch (err) {
             if (String(err).includes('Unknown index name')) {
-                await redis.ft.create(POST_SEARCH_INDEX, schema, options);
+                await redis.ft.create(POST_SEARCH_INDEX, schema as any, options as any);
             } else throw err;
         }
     }
@@ -188,6 +188,6 @@ export class PostRepository {
         await this.ensureSearchIndex();
         const redis = await this.redis();
         const results = await redis.ft.search(POST_SEARCH_INDEX, query);
-        return { total: results.total, posts: results.documents.map(d => d.value as Post) };
+        return { total: results.total, posts: results.documents.map(doc => doc.value as unknown as Post) };
     }
 }
