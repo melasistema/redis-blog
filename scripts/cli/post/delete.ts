@@ -3,14 +3,14 @@ import inquirer from 'inquirer';
 import chalk from 'chalk';
 import { PostService } from '../utils/post-service';
 import type { PostListItem } from '../utils/post-service';
-import { getRedisClient } from '../utils/redis-client'; // Import getRedisClient
+// import { getRedisClient } from '../utils/redis-client'; // No longer needed for connect/disconnect
 
 // An interactive CLI for finding and removing a blog post.
 export async function deletePostCLI() {
     const postService = new PostService();
     
     try {
-        await getRedisClient().connect(); // Connect Redis client
+        // const redisClient = await getRedisClient(); // No longer needed here as client is connected globally
         console.log(chalk.blue('Fetching posts from Redis...'));
         const posts = await postService.listPosts();
 
@@ -82,7 +82,7 @@ export async function deletePostCLI() {
     } catch (err) {
         console.error(chalk.red('An error occurred while trying to delete the post:'), err);
     } finally {
-        await getRedisClient().disconnect(); // Disconnect Redis client
-        console.log(chalk.gray('Disconnected from Redis.'));
+        // await redisClient.disconnect(); // No longer needed here as client is disconnected globally
+        // console.log(chalk.gray('Disconnected from Redis.')); // This message is now handled globally
     }
 }

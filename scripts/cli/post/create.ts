@@ -3,7 +3,7 @@ import inquirer from 'inquirer';
 import chalk from 'chalk';
 import * as readline from 'readline';
 import { PostService } from '../utils/post-service';
-import { getRedisClient } from '../utils/redis-client'; // Import getRedisClient
+// import { getRedisClient } from '../utils/redis-client'; // No longer needed for connect/disconnect
 
 // Inquirer is great for structured prompts, but not for free-form multi-line
 // input. For that, we use Node's `readline` module directly. This function
@@ -98,7 +98,7 @@ export async function createPostCLI() {
             createdAt: Date.now(), // Add createdAt timestamp
         };
 
-        await getRedisClient().connect(); // Connect Redis client
+        // const redisClient = await getRedisClient(); // No longer needed here as client is connected globally
         console.log(chalk.blue('\nSaving post to Redis...'));
 
         const newPost = await postService.createPost(postData);
@@ -115,7 +115,7 @@ export async function createPostCLI() {
     } catch (err) {
         console.error(chalk.red('An error occurred while creating the post:'), err);
     } finally {
-        await getRedisClient().disconnect(); // Disconnect Redis client
-        console.log(chalk.gray('\nDisconnected from Redis.'));
+        // await redisClient.disconnect(); // No longer needed here as client is disconnected globally
+        // console.log(chalk.gray('\nDisconnected from Redis.')); // This message is now handled globally
     }
 }

@@ -16,13 +16,13 @@ export const getRedis = async () => {
     if (client && client.isOpen) return client;
 
     const config = useRuntimeConfig();
+    const redisUrl = config.public.redisUrl; // Get from runtimeConfig
 
-    client = createClient({
-        socket: {
-            host: config.public.redisHost,
-            port: config.public.redisPort,
-        },
-    });
+    if (!redisUrl) {
+        throw new Error('REDIS_URL environment variable is not set. Please provide a Redis connection string in nuxt.config.ts and your .env file.');
+    }
+
+    client = createClient({ url: redisUrl });
 
     client.on('error', (err) => {
         console.error('REDIS ERROR:', err);

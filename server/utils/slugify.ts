@@ -1,4 +1,4 @@
-// utils/slugify.ts
+// server/utils/slugify.ts
 
 /**
  * Converts a string into a URL-friendly slug.

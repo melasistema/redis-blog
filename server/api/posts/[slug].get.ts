@@ -9,16 +9,18 @@
 import { defineEventHandler, getRouterParam } from 'h3';
 import { PostRepository } from '~/server/repositories/PostRepository';
 import { defaultBlogConfig } from '~/config/blog.config';
+import { getRedis } from '~/server/utils/redis';
 
 export default defineEventHandler(async (event) => {
     const slug = getRouterParam(event, 'slug');
+    const postRepository = new PostRepository(getRedis);
 
     if (!slug) {
         event.node.res.statusCode = 400;
         return { success: false, error: 'Slug parameter is required' };
     }
 
-    const post = await PostRepository.getBySlug(slug);
+    const post = await postRepository.getBySlug(slug);
 
     if (!post) {
         event.node.res.statusCode = 404;
@@ -27,7 +29,7 @@ export default defineEventHandler(async (event) => {
 
     let neighbors = null;
     if (defaultBlogConfig.postNavigation.enabled) {
-        neighbors = await PostRepository.getNeighbors(slug);
+        neighbors = await postRepository.getNeighbors(slug);
     }
 
     return { success: true, post, neighbors };

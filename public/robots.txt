@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
-Sitemap: ${process.env.NUXT_PUBLIC_URL || 'http://localhost:3000'}/sitemap.xml
+
+Sitemap: /sitemap.xml

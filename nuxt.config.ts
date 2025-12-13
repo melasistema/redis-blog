@@ -64,32 +64,10 @@ export default defineNuxtConfig({
     modules: [
         '@nuxtjs/google-fonts',
         '@nuxtjs/tailwindcss',
-        ['@nuxtjs/sitemap', {
-            // Nuxt 3 sitemap options
-            strict: true,
-            defaults: {
-                changefreq: 'weekly',
-                priority: 0.7,
-            },
-            // Provide dynamic routes
-            async routes() {
-                const runtimeConfig = useRuntimeConfig();
-                const baseUrl = process.env.NUXT_PUBLIC_URL || runtimeConfig.public.NUXT_PUBLIC_URL || 'http://localhost:3000';
-
-                try {
-                    const urls = await $fetch<Array<{ loc: string }>>(`${baseUrl}/api/sitemap-urls`);
-                    return urls.map(u => u.loc);
-                } catch (err) {
-                    console.error('Error generating sitemap routes:', err);
-                    return [];
-                }
-            }
-        }]
     ],
     runtimeConfig: {
         public: {
-            redisHost: process.env.NUXT_PUBLIC_REDIS_HOST,
-            redisPort: parseInt(process.env.NUXT_PUBLIC_REDIS_PORT || '6379'),
+            redisUrl: process.env.REDIS_URL,
             blogConfig: defaultBlogConfig,
         },
     },
@@ -112,10 +90,20 @@ export default defineNuxtConfig({
     },
     nitro: {
         preset: 'node-server',
-        compatibilityDate: '2025-11-23',
         prerender: {
-            routes: ['/', '/api/sitemap-urls'],
+            routes: ['/']
         },
+    },
+    routeRules: {
+        '/sitemap.xml': {
+            prerender: false,
+            cache: {
+                maxAge: 0 // Temporarily disable caching for debugging
+            }
+        },
+        '/api/sitemap-urls': {
+            prerender: false
+        }
     },
     devtools: { enabled: true },
     vite: {

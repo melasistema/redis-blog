@@ -1,29 +1,19 @@
 // scripts/cli/utils/post-service.ts
-import chalk from 'chalk';
-import { slugify } from './slugify';
-import { getRedisClient } from './redis-client'; // Only needed for deletePost (temporary)
 
-// Import types and the CLI repository from the dedicated CLI repository file
-import type { Post, NeighborPost } from './PostRepositoryCLI';
-import { PostRepositoryCLI } from './PostRepositoryCLI'; // Import the actual repository object
-
-// Re-export Post and NeighborPost for convenience if other CLI files need them
-export type { Post, NeighborPost };
+import type { Post, NeighborPost } from '~/server/repositories/PostRepository';
+import { PostRepoCLI } from './post-repo';
 
 export type PostListItem = {
-    key: string; // e.g., 'post:<slug>'
+    key: string;
     title: string;
     slug: string;
     tags: string[];
-    createdAt: number; // Use number for timestamp consistency
+    createdAt: number;
 };
 
-
 export class PostService {
-    // PostService now delegates all data access to PostRepositoryCLI
-
     async listPosts(): Promise<PostListItem[]> {
-        const posts = await PostRepositoryCLI.getLatest(1000); // Delegate
+        const posts = await PostRepoCLI.getLatest(1000);
         return posts.map(post => ({
             key: `post:${post.slug}`,
             title: post.title,
@@ -34,23 +24,23 @@ export class PostService {
     }
 
     async deletePost(post: PostListItem) {
-        return PostRepositoryCLI.deletePost(post); // Delegate to PostRepositoryCLI
+        return PostRepoCLI.deletePost(post);
     }
 
     async createPost(postData: Pick<Post, 'title' | 'content' | 'excerpt' | 'image' | 'author' | 'tags' | 'createdAt'>): Promise<Post> {
-        return PostRepositoryCLI.createPost(postData); // Delegate
+        return PostRepoCLI.createPost(postData);
     }
 
     async getPost(slug: string): Promise<Post | null> {
-        return PostRepositoryCLI.getBySlug(slug); // Delegate
+        return PostRepoCLI.getBySlug(slug);
     }
 
     async updatePost(slug: string, updatedPost: Post): Promise<Post> {
-        return PostRepositoryCLI.updatePost(slug, updatedPost); // Delegate
+        return PostRepoCLI.updatePost(slug, updatedPost);
     }
 
     async searchPosts(query: string): Promise<PostListItem[]> {
-        const { posts } = await PostRepositoryCLI.searchPosts(query); // Delegate
+        const { posts } = await PostRepoCLI.searchPosts(query);
         return posts.map(post => ({
             key: `post:${post.slug}`,
             title: post.title,
@@ -61,6 +51,6 @@ export class PostService {
     }
 
     async ensureSearchIndex(): Promise<void> {
-        return PostRepositoryCLI.ensureSearchIndex(); // Delegate
+        return PostRepoCLI.ensureSearchIndex();
     }
 }

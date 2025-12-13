@@ -9,15 +9,16 @@
 import { defineEventHandler, getQuery } from 'h3';
 import { PostRepository } from '~/server/repositories/PostRepository';
 import { defaultBlogConfig } from '~/config/blog.config';
+import { getRedis } from '~/server/utils/redis';
 
 export default defineEventHandler(async (event) => {
-
+  const postRepository = new PostRepository(getRedis);
   const query = getQuery(event);
   const searchQuery = query.q as string;
 
   // If a search query is provided, use the search repository method.
   if (searchQuery) {
-    const { posts, total } = await PostRepository.searchPosts(searchQuery);
+    const { posts, total } = await postRepository.searchPosts(searchQuery);
 
     return {
       success: true,
@@ -39,8 +40,8 @@ export default defineEventHandler(async (event) => {
     const limit = pagination.postsPerPage;
     const offset = (page - 1) * limit;
     const [posts, total] = await Promise.all([
-      PostRepository.getPaginated(offset, limit),
-      PostRepository.getTotalCount(),
+      postRepository.getPaginated(offset, limit),
+      postRepository.getTotalCount(),
     ]);
 
     return {
@@ -57,7 +58,7 @@ export default defineEventHandler(async (event) => {
 
   // Fallback for when pagination is disabled.
 
-  const posts = await PostRepository.getLatest(1000);
+  const posts = await postRepository.getLatest(1000);
 
   return {
 

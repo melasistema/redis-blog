@@ -3,7 +3,7 @@ import inquirer from 'inquirer';
 import chalk from 'chalk';
 import { PostService } from '../utils/post-service';
 import type { Post } from '../utils/post-service';
-import { getRedisClient } from '../utils/redis-client'; // Import getRedisClient
+// import { getRedisClient } from '../utils/redis-client'; // No longer needed for connect/disconnect
 
 /**
  * An interactive CLI function to select and edit an existing blog post.
@@ -12,7 +12,7 @@ export async function editPostCLI() {
     const postService = new PostService();
     
     try {
-        await getRedisClient().connect(); // Connect Redis client
+        // const redisClient = await getRedisClient(); // No longer needed here as client is connected globally
         console.log(chalk.blue('Fetching posts to edit...'));
         
         // 1. Fetch the list of posts to select from.
@@ -100,7 +100,7 @@ export async function editPostCLI() {
     } catch (err) {
         console.error(chalk.red('An error occurred while editing the post:'), err);
     } finally {
-        await getRedisClient().disconnect(); // Disconnect Redis client
-        console.log(chalk.gray('\nDisconnected from Redis.'));
+        // await redisClient.disconnect(); // No longer needed here as client is disconnected globally
+        // console.log(chalk.gray('\nDisconnected from Redis.')); // This message is now handled globally
     }
 }

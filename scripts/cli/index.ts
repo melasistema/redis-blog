@@ -8,6 +8,7 @@ import { listPostsCLI } from './post/list';
 import { createPostCLI } from './post/create';
 import { editPostCLI } from './post/edit';
 import { searchPostCLI } from './post/search';
+import { getRedisClient } from './utils/redis-client';
 
 async function mainMenu() {
     printBanner();
@@ -57,6 +58,12 @@ async function mainMenu() {
             break;
         case 'exit':
             console.log(chalk.green('Goodbye!'));
+            // Disconnect Redis client here before exiting
+            const redisClient = await getRedisClient();
+            if (redisClient.isOpen) {
+                await redisClient.disconnect();
+                console.log(chalk.gray('Disconnected from Redis.'));
+            }
             process.exit(0);
     }
     await pauseAndReturnToMenu();
@@ -66,11 +73,23 @@ async function pauseAndReturnToMenu() {
     await inquirer.prompt([
         { type: 'input', name: 'continue', message: 'Press Enter to return to the main menu...' },
     ]);
-    await mainMenu();
 }
 
 export async function cli() {
-    await mainMenu();
+    // Connect Redis client once at the start of the CLI application
+    const redisClient = await getRedisClient();
+    try {
+        if (!redisClient.isOpen) {
+            await redisClient.connect();
+            console.log(chalk.gray('Connected to Redis.'));
+        }
+        while (true) {
+            await mainMenu();
+        }
+    } catch (error) {
+        console.error(chalk.red('Failed to connect to Redis:'), error);
+        process.exit(1);
+    }
 }
 
 // Run CLI directly if executed. This allows `tsx scripts/cli/index.ts` to work.

@@ -2,14 +2,14 @@
 import chalk from 'chalk';
 import { PostService } from '../utils/post-service';
 import type { PostListItem } from '../utils/post-service';
-import { getRedisClient } from '../utils/redis-client'; // Import getRedisClient
+// import { getRedisClient } from '../utils/redis-client'; // No longer needed for connect/disconnect
 
 // A simple, non-interactive command to display all posts in the database.
 export async function listPostsCLI() {
     const postService = new PostService();
-
+    
     try {
-        await getRedisClient().connect(); // Connect Redis client
+        // const redisClient = await getRedisClient(); // No longer needed here as client is connected globally
         console.log(chalk.blue('Fetching all blog posts...'));
 
         const posts = await postService.listPosts();
@@ -32,7 +32,7 @@ export async function listPostsCLI() {
     } catch (error) {
         console.error(chalk.red('Failed to list posts:'), error);
     } finally {
-        await getRedisClient().disconnect(); // Disconnect Redis client
-        console.log(chalk.gray('Disconnected from Redis.'));
+        // await redisClient.disconnect(); // No longer needed here as client is disconnected globally
+        // console.log(chalk.gray('Disconnected from Redis.')); // This message is now handled globally
     }
 }
