@@ -69,6 +69,7 @@ export default defineNuxtConfig({
         public: {
             redisUrl: process.env.REDIS_URL,
             blogConfig: defaultBlogConfig,
+            NUXT_PUBLIC_URL: process.env.NUXT_PUBLIC_URL,
         },
     },
     googleFonts: {
