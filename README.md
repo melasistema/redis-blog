@@ -82,14 +82,13 @@ Copy the `.env.example` file to `.env` for local development. These variables ar
 cp .env.example .env
 ```
 
-| Variable Name             | Description                                                                  | Default Value (for local dev)      |
+| Variable Name             | Description                                                                  | Default Value (for local dev)     |
 |---------------------------|------------------------------------------------------------------------------|-----------------------------------|
 | `NUXT_URL`                | Base URL for the Nuxt application. Essential for internal server-side requests. | `http://0.0.0.0:3000`          |
 | `NUXT_HOST`               | The host address for the Nuxt development server.                            | `0.0.0.0`                         |
 | `NUXT_PORT`               | The port for the Nuxt development server.                                    | `3000`                            |
-
 | `REDIS_URL`               | Direct Redis connection URL for server-side and CLI scripts.                 | `redis://localhost:6380` |
-| `DEFAULT_AUTHOR`          | The default author name for new posts created via the CLI.                   | `Melasistema`                       |
+| `DEFAULT_AUTHOR`          | The default author name for new posts created via the CLI.                   | `Melasistema`                     |
 
 ### Central Blog Configuration
 
