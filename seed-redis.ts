@@ -7,12 +7,12 @@
  */
 
 // seed-redis.ts
-import { createClient } from 'redis';
-import * as dotenv from 'dotenv';
+import { hash } from 'bcryptjs';
+import { UserRepository } from '~/server/utils/auth/user-repository'; // Import the class
+import { PostRepository } from '~/server/repositories/PostRepository';
+import { getRedisClient } from '~/scripts/cli/utils/redis-client';
 // No Post import needed for tsx runtime when creating posts
 // No getRedis import needed
-
-dotenv.config(); // Load environment variables from .env file
 
 // Simple slugify function
 function slugify(text: string): string {
@@ -27,18 +27,42 @@ function slugify(text: string): string {
 }
 
 async function seedRedis() {
-    const redisUrl = process.env.NUXT_REDIS_URL || 'redis://localhost:6380';
-    const redis = createClient({ url: redisUrl }); // Directly create client
+    // Initialize PostRepository with the CLI's Redis client getter
+    const postRepository = new PostRepository(getRedisClient);
 
-    redis.on('error', (err) => console.error('Redis Client Error', err));
+    const redis = await getRedisClient(); // Get the shared Redis client
 
     try {
-        await redis.connect();
-        console.log('Connected to Redis');
+        if (!redis.isOpen) {
+            await redis.connect();
+            console.log('Connected to Redis');
+        }
 
         // Clear existing data for a fresh seed
         await redis.flushAll();
         console.log('Cleared all existing Redis data.');
+
+        // --- Create Default Admin User ---
+        const defaultAdminUsername = process.env.DEFAULT_ADMIN_USERNAME || 'admin';
+        const defaultAdminPassword = process.env.DEFAULT_ADMIN_PASSWORD || 'password'; // !! Change this in production !!
+        const defaultAdminEmail = 'admin@example.com';
+
+        // Ensure UserRepository uses the same getRedisClient
+        const cliUserRepository = new UserRepository(getRedisClient);
+
+        const existingAdmin = await cliUserRepository.getByUsername(defaultAdminUsername);
+        if (!existingAdmin) {
+            const passwordHash = await hash(defaultAdminPassword, 10); // Hash password with salt rounds = 10
+            await cliUserRepository.create({
+                username: defaultAdminUsername,
+                email: defaultAdminEmail,
+                passwordHash: passwordHash,
+                roles: ['admin'],
+            });
+            console.log(`Seeded default admin user: "${defaultAdminUsername}"`);
+        } else {
+            console.log(`Admin user "${defaultAdminUsername}" already exists.`);
+        }
 
         const examplePosts = [
             {
