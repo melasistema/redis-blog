@@ -1,3 +1,4 @@
+// nuxt.config.ts
 import { defaultBlogConfig } from './config/blog.config';
 
 function getGoogleFontsFamilies() {
@@ -30,12 +31,11 @@ function getGoogleFontsFamilies() {
         });
     });
 
-    // Sort weights and clean up
     Object.values(families).forEach(family => {
         if (typeof family === 'object' && family !== null && !Array.isArray(family)) {
-            if(family.wght) family.wght.sort((a: number,b: number)=> a-b);
-            if(family.ital && family.ital.length > 0) {
-                family.ital.sort((a: number,b: number)=> a-b);
+            if (family.wght) family.wght.sort((a, b) => a - b);
+            if (family.ital && family.ital.length > 0) {
+                family.ital.sort((a, b) => a - b);
             } else if (family.ital) {
                 delete family.ital;
             }
@@ -45,11 +45,8 @@ function getGoogleFontsFamilies() {
     return families;
 }
 
-// Helper function to build the favicon links
 const buildFaviconLinks = () => {
-    if (!defaultBlogConfig.favicon.enabled) {
-        return [];
-    }
+    if (!defaultBlogConfig.favicon.enabled) return [];
     const path = defaultBlogConfig.favicon.path;
     return [
         { rel: 'icon', type: 'image/svg+xml', href: `${path}favicon.svg` },
@@ -58,61 +55,75 @@ const buildFaviconLinks = () => {
         { rel: 'apple-touch-icon', href: `${path}apple-touch-icon.png` },
         { rel: 'manifest', href: `${path}manifest.webmanifest` },
     ];
-}
+};
 
+const blogConfig = defaultBlogConfig;
+const faviconLinks = buildFaviconLinks();
 
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  // Expose environment variables to the Nuxt application
-  runtimeConfig: {
-    public: {
-      redisHost: process.env.NUXT_PUBLIC_REDIS_HOST,
-      redisPort: parseInt(process.env.NUXT_PUBLIC_REDIS_PORT || '6379'),
-      blogConfig: defaultBlogConfig,
-    }
-  },
-  modules: [
-    '@nuxtjs/google-fonts',
-    '@nuxtjs/tailwindcss',
-    '@nuxtjs/sitemap'
-  ],
-  googleFonts: {
-    families: getGoogleFontsFamilies(),
-    display: 'swap',
-    prefetch: true,
-    preconnect: true,
-    preload: true,
-  },
-  app: {
-    head: {
-      title: defaultBlogConfig.siteName,
-      link: buildFaviconLinks(),
-      meta: [
-          { name: 'theme-color', content: defaultBlogConfig.colors.primary },
-      ],
+    modules: [
+        '@nuxtjs/google-fonts',
+        '@nuxtjs/tailwindcss',
+        ['@nuxtjs/sitemap', {
+            // Nuxt 3 sitemap options
+            strict: true,
+            defaults: {
+                changefreq: 'weekly',
+                priority: 0.7,
+            },
+            // Provide dynamic routes
+            async routes() {
+                const runtimeConfig = useRuntimeConfig();
+                const baseUrl = process.env.NUXT_PUBLIC_URL || runtimeConfig.public.NUXT_PUBLIC_URL || 'http://localhost:3000';
+
+                try {
+                    const urls = await $fetch<Array<{ loc: string }>>(`${baseUrl}/api/sitemap-urls`);
+                    return urls.map(u => u.loc);
+                } catch (err) {
+                    console.error('Error generating sitemap routes:', err);
+                    return [];
+                }
+            }
+        }]
+    ],
+    runtimeConfig: {
+        public: {
+            redisHost: process.env.NUXT_PUBLIC_REDIS_HOST,
+            redisPort: parseInt(process.env.NUXT_PUBLIC_REDIS_PORT || '6379'),
+            blogConfig: defaultBlogConfig,
+        },
     },
-  },
-  sitemap: {
-    hostname: process.env.NUXT_PUBLIC_URL || 'http://localhost:3000', // Use NUXT_PUBLIC_URL for hostname
-  } as any,
-  nitro: {
-    preset: 'node-server',
-    compatibilityDate: '2025-11-23',
-    prerender: {
-      routes: [
-        '/', // Ensure homepage is prerendered
-        '/api/sitemap-urls', // Ensure sitemap API endpoint is prerendered
-      ],
+    googleFonts: {
+        families: getGoogleFontsFamilies(),
+        display: 'swap',
+        prefetch: true,
+        preconnect: true,
+        preload: true,
     },
-  },
-  // Optional: Add any other Nuxt configuration here
-  devtools: { enabled: true },
-  vite: {
-    server: {
-      hmr: {
-        clientPort: 3000,
-        protocol: 'ws',
-      },
+    app: {
+        head: {
+            title: blogConfig.siteName,
+            meta: [
+                { name: 'theme-color', content: blogConfig.colors.primary },
+                { name: 'description', content: `Welcome to ${blogConfig.siteName}, a blog built with Nuxt and Redis.` },
+            ],
+            link: faviconLinks,
+        },
     },
-  },
-})
+    nitro: {
+        preset: 'node-server',
+        compatibilityDate: '2025-11-23',
+        prerender: {
+            routes: ['/', '/api/sitemap-urls'],
+        },
+    },
+    devtools: { enabled: true },
+    vite: {
+        server: {
+            hmr: {
+                clientPort: 3000,
+                protocol: 'ws',
+            },
+        },
+    },
+});
