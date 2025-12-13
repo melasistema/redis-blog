@@ -84,11 +84,12 @@ cp .env.example .env
 
 | Variable Name             | Description                                                                  | Default Value (for local dev)      |
 |---------------------------|------------------------------------------------------------------------------|-----------------------------------|
-| `NUXT_URL`                | Base URL for the Nuxt application. Essential for internal requests.          | `http://localhost:3000`         |
-| `NUXT_PUBLIC_REDIS_HOST`  | Redis hostname exposed to the Nuxt app.                                      | `localhost`                       |
-| `NUXT_PUBLIC_REDIS_PORT`  | Redis port exposed to the Nuxt app.                                          | `6380`                            |
-| `NUXT_REDIS_URL`          | Direct Redis connection URL for server-side scripts.                         | `redis://localhost:6380` |
-| `DEFAULT_AUTHOR`          | The default author name for new posts created via the CLI.                   | `CLI User`         |
+| `NUXT_URL`                | Base URL for the Nuxt application. Essential for internal server-side requests. | `http://0.0.0.0:3000`          |
+| `NUXT_HOST`               | The host address for the Nuxt development server.                            | `0.0.0.0`                         |
+| `NUXT_PORT`               | The port for the Nuxt development server.                                    | `3000`                            |
+
+| `REDIS_URL`               | Direct Redis connection URL for server-side and CLI scripts.                 | `redis://localhost:6380` |
+| `DEFAULT_AUTHOR`          | The default author name for new posts created via the CLI.                   | `Melasistema`                       |
 
 ### Central Blog Configuration
 
