@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2025 Luca Visciola
+ * SPDX-License-Identifier: MIT
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 <template>
   <div :style="{ maxWidth: blogConfig.contentMaxWidth }" class="mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <header>

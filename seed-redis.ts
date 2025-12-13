@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2025 Luca Visciola
+ * SPDX-License-Identifier: MIT
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 // seed-redis.ts
 import { createClient } from 'redis';
 import * as dotenv from 'dotenv';

@@ -1,6 +1,11 @@
-// This module centralizes the creation of a Redis client.
-// It ensures that all parts of the application connect to Redis using the same
-// configuration, which is loaded from environment variables.
+/**
+ * Copyright (c) 2025 Luca Visciola
+ * SPDX-License-Identifier: MIT
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 import { createClient } from 'redis';
 import type { RedisClientType } from 'redis'; // Import RedisClientType
 import * as dotenv from 'dotenv';

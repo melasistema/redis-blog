@@ -1,4 +1,12 @@
-// server/PostRepository.ts
+/**
+ * Copyright (c) 2025 Luca Visciola
+ * SPDX-License-Identifier: MIT
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+// server/repositories/PostRepository.ts
 
 import type { RedisClientType } from 'redis';
 import { slugify } from '~/server/utils/slugify';
