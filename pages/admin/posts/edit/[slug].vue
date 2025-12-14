@@ -78,7 +78,15 @@
 import { ref, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { marked } from 'marked';
-import type { Post } from '~/server/repositories/PostRepository';
+import type { Post, NeighborPost } from '~/server/repositories/PostRepository';
+
+// Define the expected response type for the API call
+interface ApiResponse {
+    success: boolean;
+    post?: Post;
+    neighbors?: { prev: NeighborPost; next: NeighborPost } | null;
+    error?: string;
+}
 
 definePageMeta({
     middleware: ['auth'], // Protect this route with auth middleware
@@ -103,12 +111,12 @@ const postForm = ref<Partial<Post>>({
 const isSaving = ref(false);
 
 // Fetch initial post data
-const { data, pending, error } = await useFetch(`/api/posts/${slug.value}`, {
-    default: () => ({ post: null }),
+const { data, pending, error } = await useFetch<ApiResponse>(`/api/posts/${slug.value}`, {
+    default: () => ({ success: false }), // A default empty successful response
 });
 
 watch(data, (newData) => {
-    if (newData?.post) {
+    if (newData?.success && newData.post) {
         postForm.value = { ...newData.post };
     }
 }, { immediate: true });
@@ -150,7 +158,7 @@ async function savePost() {
         });
 
         alert('Post updated successfully!');
-        router.push('/admin/posts'); // Redirect to post list
+        await router.push('/admin/posts'); // Redirect to post list
     } catch (e: any) {
         alert(`Failed to update post: ${e.message}`);
     } finally {
