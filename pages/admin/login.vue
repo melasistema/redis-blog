@@ -94,4 +94,27 @@ file that was distributed with this source code.
   </div>
 </template>
 <script setup lang="ts">
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuth } from '~/composables/useAuth';
+
+const username = ref('');
+const password = ref('');
+const { login, loading, error } = useAuth(); // Use the composable
+
+const router = useRouter();
+
+const handleLogin = async () => {
+    error.value = null; // Clear previous errors
+    const { success, message } = await login(username.value, password.value);
+    if (!success) {
+        error.value = message;
+    }
+    // Redirection is handled by the useAuth composable directly on successful login
+};
+
+definePageMeta({
+  layout: false, // Use a blank layout for the login page
+  middleware: ['auth'], // Explicitly apply the auth middleware
+});
 </script>
