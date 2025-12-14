@@ -12,10 +12,11 @@ file that was distributed with this source code.
     <!-- Background image (blurred) -->
     <div
         class="absolute inset-0 bg-[url('/redis-blog-poster-wide-image.jpg')]
-             bg-cover bg-center
-         scale-150 rotate-12
-         blur-md"
-    ></div>
+          bg-cover bg-center
+          scale-150 rotate-12
+          blur-md"
+    >
+    </div>
 
     <!-- Dark overlay for contrast -->
     <div class="absolute inset-0 bg-black/30"></div>

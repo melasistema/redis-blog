@@ -119,7 +119,6 @@ const runtimeConfig = useRuntimeConfig();
 const blogConfig = runtimeConfig.public.blogConfig;
 
 // Set SEO for the homepage
-// Set SEO for the homepage
 useSeo({
   title: blogConfig.siteName,
   description: blogConfig.headerTagline.replace(/<[^>]*>?/gm, ''), // Strip HTML tags from tagline
