@@ -1,3 +1,11 @@
+<!--
+Copyright (c) 2025 Luca Visciola
+SPDX-License-Identifier: MIT
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+-->
+
 <template>
     <h1 class="text-3xl font-bold mb-6">Manage Blog Posts</h1>
 

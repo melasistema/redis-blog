@@ -6,6 +6,8 @@
  * file that was distributed with this source code.
  */
 
+// server/utils/redis.ts
+
 import { createClient } from 'redis';
 import type { RedisClientType } from 'redis';
 import { useRuntimeConfig } from '#imports';

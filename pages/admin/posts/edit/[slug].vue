@@ -1,3 +1,11 @@
+<!--
+Copyright (c) 2025 Luca Visciola
+SPDX-License-Identifier: MIT
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+-->
+
 <template>
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold mb-6">Edit Blog Post</h1>

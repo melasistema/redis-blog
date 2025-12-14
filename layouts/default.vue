@@ -1,15 +1,15 @@
-/**
- * Copyright (c) 2025 Luca Visciola
- * SPDX-License-Identifier: MIT
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
+<!--
+Copyright (c) 2025 Luca Visciola
+SPDX-License-Identifier: MIT
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+-->
 
 <template>
   <div class="bg-background text-text font-sans min-h-screen">
     <slot />
-    <footer class="mt-16 py-8 border-t border-secondary text-center text-secondary text-sm">
+    <footer class="py-8 border-t border-secondary text-center text-secondary text-sm">
       <div :style="{ maxWidth: blogConfig.contentMaxWidth }" class="mx-auto px-4 sm:px-6 lg:px-8">
         <p v-html="dynamicCopyrightNotice"></p>
       </div>

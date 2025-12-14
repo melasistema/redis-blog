@@ -11,7 +11,6 @@ import inquirer from 'inquirer';
 import chalk from 'chalk';
 import { PostService } from '../utils/post-service';
 import type { PostListItem } from '../utils/post-service';
-// import { getRedisClient } from '../utils/redis-client'; // No longer needed for connect/disconnect
 
 // An interactive CLI for finding and removing a blog post.
 export async function deletePostCLI() {

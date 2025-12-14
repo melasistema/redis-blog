@@ -1,3 +1,11 @@
+<!--
+Copyright (c) 2025 Luca Visciola
+SPDX-License-Identifier: MIT
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+-->
+
 <template>
     <h2 class="text-3xl font-semibold mb-6">Welcome, {{ user?.username || 'Admin' }}!</h2>
     <p class="text-lg text-secondary">This is your central hub for managing the blog.</p>

@@ -6,6 +6,7 @@
  * file that was distributed with this source code.
  */
 
+// resource: server/api/posts.get.ts
 import { defineEventHandler, getQuery } from 'h3';
 import { PostRepository } from '~/server/repositories/PostRepository';
 import { defaultBlogConfig } from '~/config/blog.config';

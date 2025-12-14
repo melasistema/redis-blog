@@ -6,6 +6,7 @@
  * file that was distributed with this source code.
  */
 
+// server/sitemap/types.ts
 export interface SitemapUrl {
     loc: string
     lastmod?: string

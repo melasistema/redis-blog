@@ -10,7 +10,6 @@
 import chalk from 'chalk';
 import { PostService } from '../utils/post-service';
 import type { PostListItem } from '../utils/post-service';
-// import { getRedisClient } from '../utils/redis-client'; // No longer needed for connect/disconnect
 
 // A simple, non-interactive command to display all posts in the database.
 export async function listPostsCLI() {

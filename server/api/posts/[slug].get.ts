@@ -6,6 +6,8 @@
  * file that was distributed with this source code.
  */
 
+// server/api/posts/[slug].get.ts
+
 import { defineEventHandler, getRouterParam } from 'h3';
 import { PostRepository } from '~/server/repositories/PostRepository';
 import { defaultBlogConfig } from '~/config/blog.config';

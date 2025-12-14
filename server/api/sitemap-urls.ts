@@ -7,6 +7,7 @@
  */
 
 // server/api/sitemap-urls.ts
+
 import { getSitemapUrls } from '~/server/sitemap/getSitemapUrls'
 
 export default defineEventHandler(async () => {

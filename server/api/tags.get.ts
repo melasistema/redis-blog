@@ -6,6 +6,7 @@
  * file that was distributed with this source code.
  */
 
+// server/api/tags.get.ts
 import { defineEventHandler } from 'h3';
 import { TagRepository } from '~/server/repositories/TagRepository';
 

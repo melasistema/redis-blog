@@ -11,7 +11,6 @@ import inquirer from 'inquirer';
 import chalk from 'chalk';
 import * as readline from 'readline';
 import { PostService } from '../utils/post-service';
-// import { getRedisClient } from '../utils/redis-client'; // No longer needed for connect/disconnect
 
 // Inquirer is great for structured prompts, but not for free-form multi-line
 // input. For that, we use Node's `readline` module directly. This function
