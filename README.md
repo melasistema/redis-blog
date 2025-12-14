@@ -16,9 +16,10 @@ A modern, high-performance, and deeply customizable blog boilerplate built with 
 -   **🌐 Modern Favicon Support:** Comprehensive favicon setup for all modern devices, including a web app manifest.
 -   **📦 Dockerized Environment:** Fully containerized with `docker-compose` for easy setup, consistent development, and reliable production deployments.
 -   **📈 Sorted Sets for Timelines:** Efficiently retrieves posts in chronological order using Redis Sorted Sets.
--   **📝 Markdown Support:** Write post content using Markdown for rich text formatting, including headings, lists, and code blocks.
+-   **📝 Markdown Support:** Write and edit post content using Markdown directly within the Admin UI for rich text formatting, including headings, lists, and code blocks.
 -   **📜 Seeding Script & CLI:** Includes scripts to populate the database with sample posts and a CLI to create, list, and delete posts.
 -   **🔒 Admin Panel (Web UI):** A dedicated web-based interface for secure content management, user authentication, and consistent navigation within the admin section.
+    *   **Manage Posts:** View, edit, and delete posts directly from the UI.
 
 ## 🛠️ Tech Stack
 
@@ -88,8 +89,13 @@ cp .env.example .env
 | `NUXT_URL`                | Base URL for the Nuxt application. Essential for internal server-side requests. | `http://0.0.0.0:3000`          |
 | `NUXT_HOST`               | The host address for the Nuxt development server.                            | `0.0.0.0`                         |
 | `NUXT_PORT`               | The port for the Nuxt development server.                                    | `3000`                            |
+| `NUXT_PUBLIC_URL`         | The public URL for the Nuxt application, used for external links (e.g., sitemap). | `http://localhost:3000` |
 | `REDIS_URL`               | Direct Redis connection URL for server-side and CLI scripts.                 | `redis://localhost:6380` |
 | `DEFAULT_AUTHOR`          | The default author name for new posts created via the CLI.                   | `Melasistema`                     |
+| **CMS Admin Credentials** | | |
+| `DEFAULT_ADMIN_USERNAME`  | Default username for the admin panel.                                        | `admin`                           |
+| `DEFAULT_ADMIN_PASSWORD`  | Default password for the admin panel.                                        | `password`                        |
+| `DEFAULT_ADMIN_EMAIL`     | Default email for the admin panel user.                                      | `admin@example.com`               |
 
 ### Central Blog Configuration
 
@@ -185,7 +191,8 @@ To access the Admin Panel, navigate to: [http://localhost:3000/admin](http://loc
 *   **Manage Posts:**
     *   View a paginated list of all blog posts.
     *   Responsive table design for optimal viewing on all screen sizes.
-    *   (Future: Create, Edit, Delete posts directly from the UI).
+    *   **Edit Posts:** Modify existing blog posts with a web-based editor, including Markdown support for content.
+    *   **Delete Posts:** Securely remove blog posts directly from the UI.
 *   **Consistent Navigation:** Easy access back to the main dashboard and a clear logout option, available across all admin pages.
 
 This web-based interface complements the CLI tools, offering a convenient alternative for content management.
