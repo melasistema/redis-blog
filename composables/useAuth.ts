@@ -29,7 +29,19 @@ export function useAuth() {
         loading.value = true;
         error.value = null;
         try {
-            const response = await $fetch<AuthApiResponse>('/api/auth/me', { method: 'GET' });
+            const headers: HeadersInit = {};
+            if (process.server) {
+                const event = useRequestEvent();
+                const cookieHeader = event?.node.req.headers.cookie;
+                if (cookieHeader) {
+                    headers.cookie = cookieHeader;
+                }
+            }
+
+            const response = await $fetch<AuthApiResponse>('/api/auth/me', {
+                method: 'GET',
+                headers: headers, // Pass headers here
+            });
             if (response.success) { // response.user is guaranteed to exist if success is true due to AuthApiResponse type
                 user.value = response.user as User;
             } else {
@@ -82,35 +94,9 @@ export function useAuth() {
         }
     }
 
-    // On mount, try to fetch user to establish session
-    onMounted(() => {
-        fetchUser();
-    });
 
-    // Global navigation guard for admin routes
-    router.beforeEach((to, from, next) => {
-        if (to.path.startsWith('/admin') && to.path !== '/admin/login') {
-            if (loading.value) {
-                // If still loading, wait for fetchUser to complete
-                const unwatch = watch(loading, (newLoading) => {
-                    if (!newLoading) {
-                        unwatch();
-                        if (!isLoggedIn.value) {
-                            next('/admin/login');
-                        } else {
-                            next();
-                        }
-                    }
-                });
-            } else if (!isLoggedIn.value) {
-                next('/admin/login');
-            } else {
-                next();
-            }
-        } else {
-            next();
-        }
-    });
+
+
 
     return {
         user,

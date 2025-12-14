@@ -55,7 +55,7 @@ export default defineEventHandler(async (event) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
         maxAge: 60 * 60 * 24 * 7, // 1 week
-        path: ADMIN_ROUTE_PREFIX, // Restrict cookie to admin paths
+        path: '/', // Make cookie available to all paths that require authentication, including /api routes
         sameSite: 'lax', // CSRF protection
     });
 

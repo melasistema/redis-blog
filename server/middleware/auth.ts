@@ -18,37 +18,42 @@ const userRepository = new UserRepository(getRedis);
 const SESSION_COOKIE_NAME = 'session_token';
 
 export default defineEventHandler(async (event) => {
-    // Check if the request is for a static asset or public API/page
-    // For simplicity, we'll protect '/admin' routes and API routes that need authentication
-    // You might want a more sophisticated route protection mechanism
-    if (!event.node.req.url?.startsWith('/api/admin') && !event.node.req.url?.startsWith('/admin')) {
-        return; // Skip authentication for non-admin paths
+    console.log(`[Server Auth Middleware] Incoming request: ${event.node.req.url}`);
+
+    // Perform authentication for admin paths and auth API paths
+    const url = event.node.req.url;
+    if (!(url?.startsWith('/api/admin') || url?.startsWith('/admin') || url?.startsWith('/api/auth/'))) {
+        console.log(`[Server Auth Middleware] Skipping auth for: ${url}`);
+        return; // Skip authentication for other paths
     }
 
     const sessionToken = getCookie(event, SESSION_COOKIE_NAME);
+    console.log(`[Server Auth Middleware] Session Token: ${sessionToken ? 'present' : 'absent'}`);
 
     if (!sessionToken) {
-        // No session token, user is not authenticated for protected routes
+        event.context.user = undefined; // Explicitly set to undefined if no token
         return;
     }
 
     const userId = await sessionManager.validateSession(sessionToken);
+    console.log(`[Server Auth Middleware] User ID from session: ${userId || 'none'}`);
 
     if (!userId) {
-        // Invalid or expired session, clear the cookie
         deleteCookie(event, SESSION_COOKIE_NAME);
+        event.context.user = undefined;
         return;
     }
 
     const user = await userRepository.getById(userId);
+    console.log(`[Server Auth Middleware] User fetched: ${user ? user.username : 'null'}`);
 
     if (!user) {
-        // User not found for valid session, clear the session and cookie
         await sessionManager.deleteSession(sessionToken);
         deleteCookie(event, SESSION_COOKIE_NAME);
+        event.context.user = undefined;
         return;
     }
 
-    // Attach the user object to the event context for subsequent handlers
     event.context.user = user;
+    console.log(`[Server Auth Middleware] event.context.user populated: ${event.context.user.username}`);
 });

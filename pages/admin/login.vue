@@ -73,5 +73,6 @@ const handleLogin = async () => {
 
 definePageMeta({
   layout: false, // Use a blank layout for the login page
+  middleware: ['auth'], // Explicitly apply the auth middleware
 });
 </script>

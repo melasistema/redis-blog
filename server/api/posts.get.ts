@@ -33,11 +33,11 @@ export default defineEventHandler(async (event) => {
   }
 
   // Otherwise, fall back to the standard paginated post list.
-  const { pagination } = defaultBlogConfig;
+  const { pagination: blogPagination } = defaultBlogConfig;
 
-  if (pagination.enabled) {
+  if (blogPagination.enabled) {
     const page = parseInt(query.page as string || '1', 10);
-    const limit = pagination.postsPerPage;
+    const limit = parseInt(query.limit as string || String(blogPagination.postsPerPage), 10);
     const offset = (page - 1) * limit;
     const [posts, total] = await Promise.all([
       postRepository.getPaginated(offset, limit),
