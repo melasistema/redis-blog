@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
 
     // Perform authentication for admin paths and auth API paths
     const url = event.node.req.url;
-    if (!(url?.startsWith('/api/admin') || url?.startsWith('/admin') || url?.startsWith('/api/auth/'))) {
+    if (!(url?.startsWith('/api/admin') || url?.startsWith('/admin') || url?.startsWith('/api/auth/') || url?.startsWith('/api/posts'))) {
         console.log(`[Server Auth Middleware] Skipping auth for: ${url}`);
         return; // Skip authentication for other paths
     }

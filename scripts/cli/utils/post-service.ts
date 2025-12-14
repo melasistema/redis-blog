@@ -32,7 +32,7 @@ export class PostService {
     }
 
     async deletePost(post: PostListItem) {
-        return PostRepoCLI.deletePost(post);
+        return PostRepoCLI.delete(post.slug);
     }
 
     async createPost(postData: Pick<Post, 'title' | 'content' | 'excerpt' | 'image' | 'author' | 'tags' | 'createdAt'>): Promise<Post> {

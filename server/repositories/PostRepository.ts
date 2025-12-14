@@ -171,14 +171,25 @@ export class PostRepository {
         return post;
     }
 
-    async deletePost(post: { key: string; slug: string; tags?: string[] }) {
+    async delete(slug: string): Promise<boolean> {
         const redis = await this.redis();
+        const postKey = await redis.hGet('slugs', slug); // Get the key for the slug
+
+        if (!postKey) {
+            return false; // Post not found
+        }
+
+        const post = await redis.json.get(postKey) as Post | null;
+        const tags = post?.tags || [];
+
         const multi = redis.multi();
-        multi.json.del(post.key, '$');
-        multi.zRem('posts:by_date', post.key);
-        multi.hDel('slugs', post.slug);
-        (post.tags || []).forEach(t => multi.sRem(`tag:${slugify(t)}`, post.key));
+        multi.json.del(postKey, '$');
+        multi.zRem('posts:by_date', postKey);
+        multi.hDel('slugs', slug);
+        tags.forEach(t => multi.sRem(`tag:${slugify(t)}`, postKey));
+
         await multi.exec();
+        return true;
     }
 
     async ensureSearchIndex() {

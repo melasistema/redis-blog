@@ -87,7 +87,7 @@ const queryParams = computed(() => ({
   limit: limit,
 }));
 
-const { data, pending, error } = await useFetch('/api/posts', {
+const { data, pending, error, refresh } = await useFetch('/api/posts', {
   query: queryParams,
   default: () => ({ posts: [], meta: {
     total: 0,
@@ -121,12 +121,14 @@ async function deletePost(slug: string) {
     return;
   }
   try {
-    // Implement API call to delete post
-    console.log(`Deleting post with slug: ${slug}`);
-    // await $fetch(`/api/posts/${slug}`, { method: 'DELETE' }); // This endpoint doesn't exist yet
-    alert('Delete functionality not yet implemented in API.');
-    // useFetch automatically re-fetches when queryParams changes, but we can manually trigger if needed.
-    // For now, assume a change in data would trigger a refetch if needed.
+    await $fetch(`/api/posts/${slug}`, { method: 'DELETE' });
+    alert(`Post "${slug}" deleted successfully.`);
+    // Manually trigger a refetch of posts
+    if (data.value && data.value.posts) {
+        // Clear the current posts data to show loading state or empty state immediately
+        data.value.posts = [];
+    }
+    await refresh(); // Re-fetch the posts after deletion
   } catch (e: any) {
     alert(`Failed to delete post: ${e.message}`);
   }
