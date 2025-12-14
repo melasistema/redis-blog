@@ -18,6 +18,7 @@ A modern, high-performance, and deeply customizable blog boilerplate built with 
 -   **📈 Sorted Sets for Timelines:** Efficiently retrieves posts in chronological order using Redis Sorted Sets.
 -   **📝 Markdown Support:** Write post content using Markdown for rich text formatting, including headings, lists, and code blocks.
 -   **📜 Seeding Script & CLI:** Includes scripts to populate the database with sample posts and a CLI to create, list, and delete posts.
+-   **🔒 Admin Panel (Web UI):** A dedicated web-based interface for secure content management, user authentication, and consistent navigation within the admin section.
 
 ## 🛠️ Tech Stack
 
@@ -170,6 +171,24 @@ This will present you with a main menu to choose from the following actions:
 *   **Exit**: Close the CLI.
 
 Follow the on-screen prompts to perform your desired action.
+
+## 🔒 Admin Panel
+
+Manage your blog's content and settings through a modern, responsive web interface. The Admin Panel provides a centralized hub for all administrative tasks.
+
+To access the Admin Panel, navigate to: [http://localhost:3000/admin](http://localhost:3000/admin)
+
+**Key Features:**
+
+*   **User Authentication:** Secure login for administrators.
+*   **Dashboard Overview:** A central landing page for quick access to administrative functions.
+*   **Manage Posts:**
+    *   View a paginated list of all blog posts.
+    *   Responsive table design for optimal viewing on all screen sizes.
+    *   (Future: Create, Edit, Delete posts directly from the UI).
+*   **Consistent Navigation:** Easy access back to the main dashboard and a clear logout option, available across all admin pages.
+
+This web-based interface complements the CLI tools, offering a convenient alternative for content management.
 
 ## 🔌 API Endpoints
 
