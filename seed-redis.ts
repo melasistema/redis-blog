@@ -11,8 +11,6 @@ import { hash } from 'bcryptjs';
 import { UserRepository } from '~/server/utils/auth/user-repository'; // Import the class
 import { PostRepository } from '~/server/repositories/PostRepository';
 import { getRedisClient } from '~/scripts/cli/utils/redis-client';
-// No Post import needed for tsx runtime when creating posts
-// No getRedis import needed
 
 // Simple slugify function
 function slugify(text: string): string {
@@ -45,7 +43,10 @@ async function seedRedis() {
         // --- Create Default Admin User ---
         const defaultAdminUsername = process.env.DEFAULT_ADMIN_USERNAME || 'admin';
         const defaultAdminPassword = process.env.DEFAULT_ADMIN_PASSWORD || 'password'; // !! Change this in production !!
-        const defaultAdminEmail = 'admin@example.com';
+        if (!process.env.DEFAULT_ADMIN_PASSWORD) {
+            console.warn('⚠️ WARNING: Using default admin password. Please set DEFAULT_ADMIN_PASSWORD environment variable for production.');
+        }
+        const defaultAdminEmail = process.env.DEFAULT_ADMIN_EMAIL || 'admin@example.com';
 
         // Ensure UserRepository uses the same getRedisClient
         const cliUserRepository = new UserRepository(getRedisClient);
