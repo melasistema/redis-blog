@@ -31,6 +31,7 @@ import { useAuth } from '~/composables/useAuth';
 
 definePageMeta({
   layout: 'admin', // Use the custom admin layout
+  middleware: ['auth'], // Explicitly apply the auth middleware
 });
 
 const { user, isLoggedIn, loading } = useAuth(); // Keep user for display

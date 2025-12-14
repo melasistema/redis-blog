@@ -30,13 +30,19 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     }
 
     // If attempting to access an admin path other than login
-    if (to.path.startsWith('/admin') && to.path !== '/admin/login') {
-        if (!isLoggedIn.value) {
-            console.log('[Auth Middleware] Not logged in, redirecting to /admin/login');
-            // User is not logged in, redirect to login page
-            return navigateTo('/admin/login');
+    if (to.path.startsWith('/admin')) { // Simplified to catch all admin paths first
+        console.log(`[Auth Middleware] Admin path detected: ${to.path}`);
+        if (to.path !== '/admin/login') { // Further check if it's not the login page
+            console.log(`[Auth Middleware] Not login page: ${to.path}`);
+            if (!isLoggedIn.value) {
+                console.log('[Auth Middleware] Not logged in, redirecting from admin path to /admin/login');
+                // User is not logged in, redirect to login page
+                return navigateTo('/admin/login');
+            } else {
+                console.log('[Auth Middleware] Logged in, proceeding to admin route.');
+            }
         } else {
-            console.log('[Auth Middleware] Logged in, proceeding to admin route.');
+            console.log('[Auth Middleware] Is login page, and not logged in (handled by first if) or logged in (handled by first if).');
         }
     } else {
         console.log('[Auth Middleware] Not an admin route, proceeding.');
