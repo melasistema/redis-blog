@@ -184,6 +184,8 @@ Manage your blog's content and settings through a modern, responsive web interfa
 
 To access the Admin Panel, navigate to: [http://localhost:3000/admin](http://localhost:3000/admin)
 
+![Redis Blog Admin Login](resources/images/redis-blog-admin-login.jpg)
+
 **Key Features:**
 
 *   **User Authentication:** Secure login for administrators.
