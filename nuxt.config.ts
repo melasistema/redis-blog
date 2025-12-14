@@ -100,16 +100,10 @@ export default defineNuxtConfig({
     nitro: {
         preset: 'node-server',
         prerender: {
-            routes: ['/']
+            routes: ['/', '/sitemap.xml']
         },
     },
     routeRules: {
-        '/sitemap.xml': {
-            prerender: false,
-            cache: {
-                maxAge: 0 // Temporarily disable caching for debugging
-            }
-        },
         '/api/sitemap-urls': {
             prerender: false
         }
