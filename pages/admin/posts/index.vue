@@ -1,5 +1,4 @@
 <template>
-  <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-6">Manage Blog Posts</h1>
 
     <div v-if="pending" class="text-center text-gray-500">Loading posts...</div>
@@ -63,7 +62,6 @@
         </button>
       </nav>
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -74,6 +72,7 @@ import { defaultAdminConfig } from '~/config/admin.config'; // Import admin conf
 
 definePageMeta({
   middleware: ['auth'], // Protect this route with auth middleware
+  layout: 'admin', // Use the custom admin layout
 });
 
 const route = useRoute();
