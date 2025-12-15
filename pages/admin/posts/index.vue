@@ -7,7 +7,13 @@ file that was distributed with this source code.
 -->
 
 <template>
-    <h1 class="text-3xl font-bold mb-6">Manage Blog Posts</h1>
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold">Manage Blog Posts</h1>
+        <NuxtLink to="/admin/posts/create"
+                  class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+            Create New Post
+        </NuxtLink>
+    </div>
 
     <div v-if="pending" class="text-center text-gray-500">Loading posts...</div>
     <div v-else-if="error" class="text-center text-red-500">Error: {{ error.message }}</div>
