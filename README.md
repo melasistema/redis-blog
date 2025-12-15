@@ -201,11 +201,26 @@ This web-based interface complements the CLI tools, offering a convenient altern
 
 ## 🔌 API Endpoints
 
+**Public API**
+
 | Endpoint           | Method | Description                                                                   |
 |--------------------|--------|-------------------------------------------------------------------------------|
 | `/api/posts`       | `GET`  | Retrieves a list of posts. Supports `?page=N` for pagination.                 |
 | `/api/posts/:slug` | `GET`  | Retrieves a single post and its next/previous neighbors.                      |
 | `/api/tags`        | `GET`  | Retrieves a list of all unique tags.                                          |
+
+**Admin API**
+
+These endpoints are protected and require administrator authentication.
+
+| Endpoint           | Method | Description                                        |
+|--------------------|--------|----------------------------------------------------|
+| `/api/auth/login`  | `POST` | Authenticates an admin user and creates a session. |
+| `/api/auth/logout` | `POST` | Logs out the current admin user.                   |
+| `/api/auth/me`     | `GET`  | Retrieves the currently authenticated user.        |
+| `/api/posts`       | `POST` | Creates a new blog post.                           |
+| `/api/posts/:slug` | `PUT`  | Updates an existing blog post.                     |
+| `/api/posts/:slug` | `DELETE`| Deletes a blog post.                               |
 
 ## 🌟 Credits
 
