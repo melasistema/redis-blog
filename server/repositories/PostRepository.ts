@@ -44,6 +44,17 @@ export class PostRepository {
         return this.getRedisClient();
     }
 
+    private normalizeTags(tags: string[] = []): string[] {
+        if (!tags || !Array.isArray(tags)) {
+            return [];
+        }
+        // Use a Set to handle duplicates that might arise from lowercasing
+        const normalizedSet = new Set(
+            tags.map(tag => tag.trim().toLowerCase()).filter(Boolean)
+        );
+        return Array.from(normalizedSet);
+    }
+
     async getLatest(limit = 20): Promise<Post[]> {
         const redis = await this.redis();
         const keys = await redis.zRange('posts:by_date', 0, limit - 1, { REV: true });
@@ -114,20 +125,27 @@ export class PostRepository {
         const redis = await this.redis();
         const slug = slugify(data.title);
         const key = `post:${slug}`;
-        const post: Post = { slug, ...data, excerpt: data.excerpt || data.content.substring(0, 150) };
+
+        // Normalize tags at the source
+        const normalizedTags = this.normalizeTags(data.tags);
+
+        const post: Post = {
+            slug,
+            ...data,
+            tags: normalizedTags, // Use normalized tags
+            excerpt: data.excerpt || data.content.substring(0, 150)
+        };
 
         const multi = redis.multi();
         multi.json.set(key, '$', post as any);
         multi.zAdd('posts:by_date', { score: data.createdAt, value: key });
         multi.hSet('slugs', slug, key);
 
-        if (data.tags?.length) {
-            for (const tag of data.tags) {
-                const clean = tag.trim();
-                if (clean) {
-                    multi.sAdd('tags:all', clean);
-                    multi.sAdd(`tag:${slugify(clean)}`, key);
-                }
+        if (normalizedTags.length) {
+            for (const tag of normalizedTags) {
+                // The tag is already clean, trimmed, and lowercased.
+                multi.sAdd('tags:all', tag);
+                multi.sAdd(`tag:${slugify(tag)}`, key);
             }
         }
 
@@ -141,12 +159,19 @@ export class PostRepository {
         const newSlug = slugify(updated.title);
         const newKey = `post:${newSlug}`;
 
-        const existing = await redis.json.get(oldKey, { path: ['$'] }) as Post | null; // Corrected: directly get Post | null
+        const existing = await redis.json.get(oldKey, { path: ['$'] }) as Post | null;
         if (!existing) {
             throw new Error(`Post ${slug} not found`);
         }
 
-        const post: Post = { ...updated, slug: newSlug, excerpt: updated.excerpt || updated.content.substring(0, 150) };
+        // Normalize tags before processing
+        const normalizedTags = this.normalizeTags(updated.tags);
+        const post: Post = {
+            ...updated,
+            tags: normalizedTags, // Use normalized tags
+            slug: newSlug,
+            excerpt: updated.excerpt || updated.content.substring(0, 150)
+        };
         const multi = redis.multi();
 
         if (slug !== newSlug) {
@@ -156,15 +181,32 @@ export class PostRepository {
             multi.hDel('slugs', slug);
             multi.hSet('slugs', newSlug, newKey);
 
-            (existing.tags || []).forEach(t => multi.sRem(`tag:${slugify(t)}`, oldKey));
-            (post.tags || []).forEach(t => multi.sAdd(`tag:${slugify(t)}`, newKey));
+            // Use normalized tags for comparison and updates
+            const oldNormalizedTags = this.normalizeTags(existing.tags);
+            oldNormalizedTags.forEach(t => multi.sRem(`tag:${slugify(t)}`, oldKey));
+            (post.tags || []).forEach(t => {
+                multi.sAdd(`tag:${slugify(t)}`, newKey);
+                multi.sAdd('tags:all', t); // Ensure tag exists in global set
+            });
             multi.json.del(oldKey, '$');
         } else {
             multi.json.set(oldKey, '$', post as any);
-            const oldTags = new Set(existing.tags || []);
+            // Use normalized tags for comparison
+            const oldTags = new Set(this.normalizeTags(existing.tags));
             const newTags = new Set(post.tags || []);
-            oldTags.forEach(t => { if (!newTags.has(t)) multi.sRem(`tag:${slugify(t)}`, oldKey); });
-            newTags.forEach(t => { if (!oldTags.has(t)) multi.sAdd(`tag:${slugify(t)}`, oldKey); });
+
+            oldTags.forEach(t => {
+                if (!newTags.has(t)) {
+                    multi.sRem(`tag:${slugify(t)}`, oldKey);
+                    // Note: This does not remove from 'tags:all'
+                }
+            });
+            newTags.forEach(t => {
+                if (!oldTags.has(t)) {
+                    multi.sAdd(`tag:${slugify(t)}`, oldKey);
+                    multi.sAdd('tags:all', t); // Ensure tag exists in global set
+                }
+            });
         }
 
         await multi.exec();
@@ -186,7 +228,10 @@ export class PostRepository {
         multi.json.del(postKey, '$');
         multi.zRem('posts:by_date', postKey);
         multi.hDel('slugs', slug);
-        tags.forEach(t => multi.sRem(`tag:${slugify(t)}`, postKey));
+        
+        // Use normalized tags for removal
+        const normalizedTags = this.normalizeTags(tags);
+        normalizedTags.forEach(t => multi.sRem(`tag:${slugify(t)}`, postKey));
 
         await multi.exec();
         return true;
