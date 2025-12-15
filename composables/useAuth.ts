@@ -8,7 +8,7 @@
 
 // composables/useAuth.ts
 
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import type { User, UserRole } from '~/server/utils/auth/types';
 import type { AuthApiResponse } from '~/server/types/api.d'; // Import AuthApiResponse
@@ -93,9 +93,6 @@ export function useAuth() {
             loading.value = false;
         }
     }
-
-
-
 
 
     return {
