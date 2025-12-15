@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-// server/api/posts/[slug].put.ts
+// server/api/posts/[id].put.ts
 
 import { defineEventHandler, getRouterParam, readBody } from 'h3';
 import { PostRepository } from '~/server/repositories/PostRepository';
@@ -15,23 +15,18 @@ import type { Post } from '~/server/repositories/PostRepository';
 
 export default defineEventHandler(async (event) => {
     // Ensure only authenticated users with 'admin' role can update posts
-    if (!event.context.user) {
-        event.node.res.statusCode = 401;
-        return { success: false, message: 'Unauthorized. Please log in.' };
-    }
-
-    if (!event.context.user.roles?.includes('admin')) {
+    if (!event.context.user || !event.context.user.roles?.includes('admin')) {
         event.node.res.statusCode = 403;
         return { success: false, message: 'Forbidden. Only administrators can update posts.' };
     }
 
-    const slug = getRouterParam(event, 'slug');
-    const updatedPostData: Post = await readBody(event);
+    const id = getRouterParam(event, 'id');
+    const updatedPostData: Partial<Omit<Post, 'id' | 'createdAt'>> = await readBody(event);
     const postRepository = new PostRepository(getRedis);
 
-    if (!slug) {
+    if (!id) {
         event.node.res.statusCode = 400;
-        return { success: false, message: 'Slug parameter is required.' };
+        return { success: false, message: 'Post ID parameter is required.' };
     }
 
     // Basic validation for updatedPostData
@@ -41,12 +36,12 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
-        const updatedPost = await postRepository.updatePost(slug, updatedPostData);
+        const updatedPost = await postRepository.updatePost(id, updatedPostData);
         return { success: true, message: `Post "${updatedPost.title}" updated successfully.`, post: updatedPost };
     } catch (error: any) {
-        if (error.message.includes('not found')) { // Assuming PostRepository throws this specific error
+        if (error.message.includes('not found')) {
             event.node.res.statusCode = 404;
-            return { success: false, message: `Post with slug "${slug}" not found.` };
+            return { success: false, message: `Post with id "${id}" not found.` };
         }
         event.node.res.statusCode = 500;
         return { success: false, message: `Failed to update post: ${error.message}` };

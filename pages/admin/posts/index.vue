@@ -9,10 +9,11 @@ file that was distributed with this source code.
 <template>
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold">Manage Blog Posts</h1>
-        <NuxtLink to="/admin/posts/create"
-                  class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-            Create New Post
-        </NuxtLink>
+        <button @click="createNewPost" :disabled="isCreating"
+                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed">
+            <span v-if="isCreating">Creating...</span>
+            <span v-else>Create New Post</span>
+        </button>
     </div>
 
     <div v-if="pending" class="text-center text-gray-500">Loading posts...</div>
@@ -41,7 +42,7 @@ file that was distributed with this source code.
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200 md:table-row-group">
-            <tr v-for="post in posts" :key="post.slug" class="block md:table-row bg-white shadow-md md:shadow-none rounded-lg mb-4 md:mb-0">
+            <tr v-for="post in posts" :key="post.id" class="block md:table-row bg-white shadow-md md:shadow-none rounded-lg mb-4 md:mb-0">
               <td data-label="Title" class="px-6 py-4 whitespace-nowrap block md:table-cell">
                 <div class="text-sm font-medium text-gray-900">{{ post.title }}</div>
               </td>
@@ -57,7 +58,7 @@ file that was distributed with this source code.
                 {{ new Date(post.createdAt).toLocaleDateString() }}
               </td>
               <td data-label="Actions" class="px-6 py-4 whitespace-nowrap block md:table-cell text-left text-sm font-medium">
-                <NuxtLink :to="`/admin/posts/edit/${post.slug}`" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</NuxtLink>
+                <NuxtLink :to="`/admin/posts/edit/${post.id}`" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</NuxtLink>
                 <button @click="deletePost(post.slug)" class="text-red-600 hover:text-red-900">Delete</button>
               </td>
             </tr>
@@ -95,15 +96,22 @@ const router = useRouter();
 const { pagination } = defaultAdminConfig;
 const limit = pagination.postsPerPage;
 const page = ref(parseInt(route.query.page as string) || 1);
+const isCreating = ref(false);
 
 const queryParams = computed(() => ({
   page: page.value,
   limit: limit,
 }));
 
+interface DraftApiResponse {
+  success: boolean;
+  post?: Post;
+  message?: string;
+}
+
 const { data, pending, error, refresh } = await useFetch('/api/posts', {
   query: queryParams,
-  default: () => ({ posts: [], meta: {
+  default: () => ({ posts: [] as Post[], meta: {
     total: 0,
     page: 1,
     limit: limit,
@@ -116,10 +124,7 @@ const meta = computed(() => data.value?.meta || {});
 
 // Update router query when page changes
 watch(page, (newPage) => {
-  const query = {};
-  if (newPage > 1) {
-    query.page = newPage;
-  }
+  const query = { page: newPage > 1 ? newPage : undefined };
   router.push({ query });
 });
 
@@ -130,6 +135,22 @@ const changePage = (newPage: number) => {
   }
 };
 
+async function createNewPost() {
+  isCreating.value = true;
+  try {
+    const response = await $fetch<DraftApiResponse>('/api/posts/draft', { method: 'POST' });
+    if (response.success && response.post) {
+      await router.push(`/admin/posts/edit/${response.post.id}`);
+    } else {
+      alert(`Failed to create draft: ${response.message || 'Unknown error'}`);
+    }
+  } catch (e: any) {
+    alert(`Failed to create draft: ${e.data?.message || e.message}`);
+  } finally {
+    isCreating.value = false;
+  }
+}
+
 async function deletePost(slug: string) {
   if (!confirm(`Are you sure you want to delete the post "${slug}"?`)) {
     return;
@@ -137,14 +158,9 @@ async function deletePost(slug: string) {
   try {
     await $fetch(`/api/posts/${slug}`, { method: 'DELETE' });
     alert(`Post "${slug}" deleted successfully.`);
-    // Manually trigger a refetch of posts
-    if (data.value && data.value.posts) {
-        // Clear the current posts data to show loading state or empty state immediately
-        data.value.posts = [];
-    }
-    await refresh(); // Re-fetch the posts after deletion
+    await refresh();
   } catch (e: any) {
-    alert(`Failed to delete post: ${e.message}`);
+    alert(`Failed to delete post: ${e.data?.message || e.message}`);
   }
 }
 </script>

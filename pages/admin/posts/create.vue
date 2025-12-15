@@ -54,10 +54,10 @@ file that was distributed with this source code.
                               class="mt-1 block w-full py-2 px-3 rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50"></textarea>
                 </div>
 
-                <!-- Image URL -->
+                <!-- Featured Image URL -->
                 <div>
-                    <label for="image" class="block text-sm font-medium text-gray-700">Image URL</label>
-                    <input type="text" id="image" v-model="postForm.image"
+                    <label for="featured_image" class="block text-sm font-medium text-gray-700">Featured Image URL</label>
+                    <input type="text" id="featured_image" v-model="postForm.featured_image"
                            class="mt-1 block w-full py-2 px-3 rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50" />
                 </div>
 
@@ -96,7 +96,7 @@ const postForm = ref<Partial<Post>>({
     title: '',
     content: '',
     excerpt: '',
-    image: '',
+    featured_image: '',
     author: '',
     tags: [],
 });
@@ -124,23 +124,28 @@ async function createPost() {
 
     isSaving.value = true;
     try {
-        const payload: Partial<Post> & { createdAt: number } = {
+        const payload: Partial<Omit<Post, 'id' | 'slug' | 'images'>> & { createdAt: number } = {
             title: postForm.value.title,
             content: postForm.value.content,
             excerpt: postForm.value.excerpt,
-            image: postForm.value.image,
+            featured_image: postForm.value.featured_image,
             author: postForm.value.author,
             tags: postForm.value.tags,
-            createdAt: Date.now(), // Add current timestamp
+            createdAt: Date.now(),
         };
 
-        await $fetch('/api/posts', {
+        const response = await $fetch('/api/posts', {
             method: 'POST',
             body: payload,
         });
 
-        alert('Post created successfully!');
-        await router.push('/admin/posts'); // Redirect to post list
+        if(response.post) {
+             await router.push(`/admin/posts/edit/${response.post.id}`);
+        } else {
+            alert('Post created successfully, but could not redirect to edit page.');
+            await router.push('/admin/posts');
+        }
+
     } catch (e: any) {
         alert(`Failed to create post: ${e.data?.message || e.message}`);
     } finally {
