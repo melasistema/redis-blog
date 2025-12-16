@@ -65,8 +65,7 @@ export async function createPostCLI() {
         // for the post's main content.
         const content = await getMultiLineInput('Post Content:', '(end)');
 
-        // Add new prompts for excerpt and image
-        const { excerpt, image } = await inquirer.prompt([
+        const { excerpt, featured_image } = await inquirer.prompt([
             {
                 type: 'input',
                 name: 'excerpt',
@@ -75,7 +74,7 @@ export async function createPostCLI() {
             },
             {
                 type: 'input',
-                name: 'image',
+                name: 'featured_image',
                 message: 'Featured Image URL (optional, for Open Graph):',
                 default: '', // Make it optional
             },
@@ -98,14 +97,13 @@ export async function createPostCLI() {
         const postData = {
             title: title,
             content: content,
-            excerpt: excerpt || content.substring(0, 150), // Use provided excerpt or generate from content
-            image: image || null, // Use provided image or null
+            excerpt: excerpt || content.substring(0, 150),
+            featured_image: featured_image || null,
             author: author,
             tags: tags.split(',').map((tag: string) => tag.trim()).filter(Boolean),
-            createdAt: Date.now(), // Add createdAt timestamp
+            createdAt: Date.now(),
         };
 
-        // const redisClient = await getRedisClient(); // No longer needed here as client is connected globally
         console.log(chalk.blue('\nSaving post to Redis...'));
 
         const newPost = await postService.createPost(postData);
@@ -115,14 +113,11 @@ export async function createPostCLI() {
         console.log(chalk.white(`   - Author: ${newPost.author}`));
         console.log(chalk.white(`   - Slug: ${newPost.slug}`));
         if (newPost.excerpt) console.log(chalk.white(`   - Excerpt: ${newPost.excerpt.substring(0, 50)}...`));
-        if (newPost.image) console.log(chalk.white(`   - Image: ${newPost.image}`));
+        if (newPost.featured_image) console.log(chalk.white(`   - Featured Image: ${newPost.featured_image}`));
         console.log(chalk.white(`   - Tags: ${newPost.tags?.join(', ')}`));
         console.log(chalk.white(`   - Created At: ${new Date(newPost.createdAt).toLocaleString()}`));
 
     } catch (err) {
         console.error(chalk.red('An error occurred while creating the post:'), err);
-    } finally {
-        // await redisClient.disconnect(); // No longer needed here as client is disconnected globally
-        // console.log(chalk.gray('\nDisconnected from Redis.')); // This message is now handled globally
     }
 }

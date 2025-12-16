@@ -17,7 +17,6 @@ export async function editPostCLI() {
     const postService = new PostService();
     
     try {
-        // const redisClient = await getRedisClient(); // No longer needed here as client is connected globally
         console.log(chalk.blue('Fetching posts to edit...'));
         
         // 1. Fetch the list of posts to select from.
@@ -73,6 +72,12 @@ export async function editPostCLI() {
             },
             {
                 type: 'input',
+                name: 'featured_image',
+                message: 'Featured Image URL:',
+                default: postToEdit.featured_image,
+            },
+            {
+                type: 'input',
                 name: 'tags',
                 message: 'Tags (comma-separated):',
                 default: postToEdit.tags?.join(', '),
@@ -86,26 +91,22 @@ export async function editPostCLI() {
         ]);
 
         // 5. Construct the final updated post object.
-        const updatedPost: Post = {
-            ...postToEdit, // Start with the original post data
+        const updatedPost: Partial<Post> = {
             title: updatedAnswers.title,
             content: updatedAnswers.content,
             author: updatedAnswers.author,
             tags: updatedAnswers.tags.split(',').map((tag: string) => tag.trim()).filter(Boolean),
-            // The slug will be recalculated in the updatePost method if the title changes.
+            featured_image: updatedAnswers.featured_image,
         };
 
         // 6. Call the updatePost method in PostService.
         console.log(chalk.blue('\nSaving updated post to Redis...'));
-        await postService.updatePost(selectedPostSummary.slug, updatedPost);
+        await postService.updatePost(postToEdit.id, updatedPost);
 
-        console.log(chalk.green('\nSuccessfully updated the post!'));
-        console.log(chalk.white(`   - Title: ${updatedPost.title}`));
+        console.log(chalk.green('\n✅ Successfully updated the post!'));
+        console.log(chalk.white(`   - Title: ${updatedAnswers.title}`));
 
     } catch (err) {
         console.error(chalk.red('An error occurred while editing the post:'), err);
-    } finally {
-        // await redisClient.disconnect(); // No longer needed here as client is disconnected globally
-        // console.log(chalk.gray('\nDisconnected from Redis.')); // This message is now handled globally
     }
 }

@@ -35,7 +35,15 @@ export class PostService {
         return PostRepoCLI.delete(post.slug);
     }
 
-    async createPost(postData: Pick<Post, 'title' | 'content' | 'excerpt' | 'image' | 'author' | 'tags' | 'createdAt'>): Promise<Post> {
+    async createPost(postData: {
+        title: any;
+        content: string;
+        excerpt: any;
+        featured_image: any;
+        author: any;
+        tags: any;
+        createdAt: number
+    }): Promise<Post> {
         return PostRepoCLI.createPost(postData);
     }
 

@@ -11,8 +11,6 @@
 import { defineEventHandler, getRouterParam } from 'h3';
 import { PostRepository } from '~/server/repositories/PostRepository';
 import { getRedis } from '~/server/utils/redis';
-import { rm } from 'fs/promises';
-import path from 'path';
 
 export default defineEventHandler(async (event) => {
     // Authentication checks
@@ -30,19 +28,9 @@ export default defineEventHandler(async (event) => {
     const postRepository = new PostRepository(getRedis);
 
     try {
-        const { deleted, postId } = await postRepository.delete(slug);
+        const deleted = await postRepository.delete(slug);
 
-        if (deleted && postId) {
-            // If post was deleted from Redis, also delete its image assets directory
-            const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'posts', postId);
-            try {
-                await rm(uploadDir, { recursive: true, force: true });
-                console.log(`Deleted post assets directory: ${uploadDir}`);
-            } catch (fsError: any) {
-                // Log the error, but don't fail the request if the DB deletion was successful.
-                // The directory might not exist, which is fine.
-                console.error(`Failed to delete post assets directory for postId ${postId}:`, fsError);
-            }
+        if (deleted) {
             return { success: true, message: `Post with slug "${slug}" deleted successfully.` };
         } else {
             event.node.res.statusCode = 404;

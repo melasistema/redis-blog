@@ -12,6 +12,8 @@ import type { RedisClientType } from 'redis';
 import { slugify } from '~/server/utils/slugify';
 import { v4 as uuidv4 } from 'uuid';
 import chalk from 'chalk';
+import { rm } from 'fs/promises';
+import path from 'path';
 
 // --- Types ---
 export interface Post {
@@ -213,22 +215,24 @@ export class PostRepository {
         return post;
     }
 
-    async delete(slug: string): Promise<{ deleted: boolean; postId: string | null }> {
+    async delete(slug: string): Promise<boolean> {
         const redis = await this.redis();
         const postKey = await redis.hGet('slugs', slug);
 
         if (!postKey) {
-            return { deleted: false, postId: null };
+            return false;
         }
 
         const post = await redis.json.get(postKey) as Post | null;
         if (!post) {
             // This can happen if slugs hash is out of sync
             redis.hDel('slugs', slug); // Clean up inconsistent hash
-            return { deleted: false, postId: null };
+            return false;
         }
         const tags = post.tags || [];
+        const postId = post.id;
 
+        // Perform Redis deletions
         const multi = redis.multi();
         multi.json.del(postKey, '$');
         multi.zRem('posts:by_date', postKey);
@@ -238,7 +242,20 @@ export class PostRepository {
         normalizedTags.forEach(t => multi.sRem(`tag:${slugify(t)}`, postKey));
 
         await multi.exec();
-        return { deleted: true, postId: post.id };
+
+        // After successful DB deletion, delete the image folder
+        if (postId) {
+            const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'posts', postId);
+            try {
+                await rm(uploadDir, { recursive: true, force: true });
+                console.log(chalk.gray(`   - Cleaned up asset directory: ${uploadDir}`));
+            } catch (fsError: any) {
+                // Log the error but don't throw, as the primary DB record is already deleted.
+                console.error(chalk.red(`   - Warning: Failed to delete post asset directory for postId ${postId}:`), fsError);
+            }
+        }
+        
+        return true;
     }
 
     async ensureSearchIndex() {
