@@ -17,9 +17,10 @@ A modern, high-performance, and deeply customizable blog boilerplate built with 
 -   **📦 Dockerized Environment:** Fully containerized with `docker-compose` for easy setup, consistent development, and reliable production deployments.
 -   **📈 Sorted Sets for Timelines:** Efficiently retrieves posts in chronological order using Redis Sorted Sets.
 -   **📝 Markdown Support:** Write and edit post content using Markdown directly within the Admin UI for rich text formatting, including headings, lists, and code blocks.
--   **📜 Seeding Script & CLI:** Includes scripts to populate the database with sample posts and a CLI to create, list, and delete posts.
--   **🔒 Admin Panel (Web UI):** A dedicated web-based interface for secure content management, user authentication, and consistent navigation within the admin section.
-    *   **Manage Posts:** View, edit, and delete posts directly from the UI.
+-   **📜 Seeding Script & CLI:** Includes scripts to populate the database with sample posts and a CLI for post management.
+-   **🔒 Admin Panel (Web UI):** A dedicated web-based interface for secure content management.
+-   **🖼️ Professional Image Handling:** Upload images directly in the post editor. Images are stored in post-specific folders and are automatically deleted when a post is removed, preventing orphaned files.
+-   **🆔 Stable Post IDs:** Posts are identified by a stable unique ID, allowing slugs to change without breaking internal references.
 
 ## 🛠️ Tech Stack
 
@@ -190,11 +191,12 @@ To access the Admin Panel, navigate to: [http://localhost:3000/admin](http://loc
 
 *   **User Authentication:** Secure login for administrators.
 *   **Dashboard Overview:** A central landing page for quick access to administrative functions.
+*   **"Create Draft" Workflow:** Start a new post with a single click, which instantly creates a draft and redirects to the editor.
 *   **Manage Posts:**
     *   View a paginated list of all blog posts.
     *   Responsive table design for optimal viewing on all screen sizes.
-    *   **Edit Posts:** Modify existing blog posts with a web-based editor, including Markdown support for content.
-    *   **Delete Posts:** Securely remove blog posts directly from the UI.
+    *   **Edit Posts:** Modify content, metadata, and **upload images** through an integrated interface.
+    *   **Delete Posts:** Securely remove blog posts and their associated images directly from the UI.
 *   **Consistent Navigation:** Easy access back to the main dashboard and a clear logout option, available across all admin pages.
 
 This web-based interface complements the CLI tools, offering a convenient alternative for content management.
@@ -213,14 +215,16 @@ This web-based interface complements the CLI tools, offering a convenient altern
 
 These endpoints are protected and require administrator authentication.
 
-| Endpoint           | Method | Description                                        |
-|--------------------|--------|----------------------------------------------------|
-| `/api/auth/login`  | `POST` | Authenticates an admin user and creates a session. |
-| `/api/auth/logout` | `POST` | Logs out the current admin user.                   |
-| `/api/auth/me`     | `GET`  | Retrieves the currently authenticated user.        |
-| `/api/posts`       | `POST` | Creates a new blog post.                           |
-| `/api/posts/:slug` | `PUT`  | Updates an existing blog post.                     |
-| `/api/posts/:slug` | `DELETE`| Deletes a blog post.                               |
+| Endpoint | Method | Description |
+| :--- | :--- | :--- |
+| `/api/auth/login` | `POST` | Authenticates an admin user and creates a session. |
+| `/api/auth/logout`| `POST` | Logs out the current admin user. |
+| `/api/auth/me` | `GET` | Retrieves the currently authenticated user. |
+| `/api/posts/draft`| `POST` | Creates a new draft post. |
+| `/api/posts/update/:id`| `PUT` | Updates a post by its ID. |
+| `/api/posts/:slug`| `DELETE`| Deletes a post and its associated image assets by its slug. |
+| `/api/posts/by-id/:id`| `GET` | Retrieves a full post by its ID for editing. |
+| `/api/posts/:id/images`| `POST` | Uploads an image for a specific post and returns the URL. |
 
 ## 🌟 Credits
 
